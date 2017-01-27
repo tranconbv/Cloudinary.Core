@@ -1,0 +1,15 @@
+{
+  "version": "1.30.0",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1",
+    "System.Runtime": "4.3.0",
+    "System.Runtime.Extensions": "4.3.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+    }
+  }
+}
