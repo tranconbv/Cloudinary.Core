@@ -26,7 +26,7 @@ namespace CloudinaryDotNet
           else
             num2 >>= 1;
         }
-        Crc32.table[(IntPtr) index1] = num2;
+        Crc32.table[index1] = num2;
       }
     }
 

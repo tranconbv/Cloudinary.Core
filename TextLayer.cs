@@ -6,7 +6,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web;
+using System.Net;
 
 namespace CloudinaryDotNet
 {
@@ -58,7 +58,7 @@ namespace CloudinaryDotNet
 
     private string OverlayTextEncode(string text)
     {
-      return HttpUtility.UrlEncodeUnicode(text).Replace("%2f", "/").Replace("%3a", ":").Replace("+", "%20").Replace("%2c", "%e2%80%9a").Replace("/", "%e2%81%84");
+      return WebUtility.UrlEncode(text).Replace("%2f", "/").Replace("%3a", ":").Replace("+", "%20").Replace("%2c", "%e2%80%9a").Replace("/", "%e2%81%84");
     }
 
     public TextLayer FontFamily(string fontFamily)

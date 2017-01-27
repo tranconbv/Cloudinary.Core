@@ -7,14 +7,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
+using Microsoft.AspNetCore.Html;
 
 namespace CloudinaryDotNet
 {
-  public class Url : ICloneable
-  {
+  public class Url  //: ICloneable, lets not even go there: http://stackoverflow.com/a/20386650/1275832
+    {
     private static readonly string[] DEFAULT_VIDEO_SOURCE_TYPES = new string[3]
     {
       "webm",
@@ -250,12 +251,12 @@ namespace CloudinaryDotNet
       return this.BuildUrl(source);
     }
 
-    public IHtmlString BuildImageTag(string source, params string[] keyValuePairs)
+    public IHtmlContent BuildImageTag(string source, params string[] keyValuePairs)
     {
       return this.BuildImageTag(source, new StringDictionary(keyValuePairs));
     }
 
-    public IHtmlString BuildImageTag(string source, StringDictionary dict = null)
+    public IHtmlContent BuildImageTag(string source, StringDictionary dict = null)
     {
       if (dict == null)
         dict = new StringDictionary();
@@ -280,17 +281,17 @@ namespace CloudinaryDotNet
       if (!string.IsNullOrEmpty(str1))
         stringBuilder.Append(" src=\"").Append(str1).Append("\"");
       foreach (KeyValuePair<string, string> keyValuePair in dict)
-        stringBuilder.Append(" ").Append(keyValuePair.Key).Append("=\"").Append(HttpUtility.HtmlAttributeEncode(keyValuePair.Value)).Append("\"");
+        stringBuilder.Append(" ").Append(keyValuePair.Key).Append("=\"").Append(WebUtility.HtmlEncode(keyValuePair.Value)).Append("\"");
       stringBuilder.Append("/>");
-      return (IHtmlString) new HtmlString(stringBuilder.ToString());
+      return (IHtmlContent) new HtmlString(stringBuilder.ToString());
     }
 
-    public IHtmlString BuildVideoTag(string source, params string[] keyValuePairs)
+    public IHtmlContent BuildVideoTag(string source, params string[] keyValuePairs)
     {
       return this.BuildVideoTag(source, new StringDictionary(keyValuePairs));
     }
 
-    public IHtmlString BuildVideoTag(string source, StringDictionary dict = null)
+    public IHtmlContent BuildVideoTag(string source, StringDictionary dict = null)
     {
       if (dict == null)
         dict = new StringDictionary();
@@ -336,7 +337,7 @@ namespace CloudinaryDotNet
       if (!string.IsNullOrEmpty(this.m_fallbackContent))
         sb.Append(this.m_fallbackContent);
       sb.Append("</video>");
-      return (IHtmlString) new HtmlString(sb.ToString());
+      return (IHtmlContent) new HtmlString(sb.ToString());
     }
 
     private void AppendVideoSources(StringBuilder sb, string source, string sourceType)
@@ -596,9 +597,9 @@ namespace CloudinaryDotNet
       return url;
     }
 
-    object ICloneable.Clone()
-    {
-      return (object) this.Clone();
-    }
+    //object ICloneable.Clone()
+    //{
+    //  return (object) this.Clone();
+    //}
   }
 }

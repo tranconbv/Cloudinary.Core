@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -236,7 +237,7 @@ namespace CloudinaryDotNet.Actions
       if (!string.IsNullOrEmpty(this.m_type))
         this.AddParam(paramsDictionary, "type", this.m_type);
       if (this.m_transformations != null && this.m_transformations.Count > 0)
-        this.AddParam(paramsDictionary, "transformations", string.Join("/", this.m_transformations.ConvertAll<string>((Converter<Transformation, string>) (t => t.ToString())).ToArray()));
+        this.AddParam(paramsDictionary, "transformations", string.Join("/", this.m_transformations.Select(t => t.ToString()).ToArray()));
       if (this.m_targetFormat != ArchiveFormat.Zip)
         this.AddParam(paramsDictionary, "target_format", Api.GetCloudinaryParam<ArchiveFormat>(this.m_targetFormat));
       if (this.m_flattenFolders)

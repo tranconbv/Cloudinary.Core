@@ -13,8 +13,8 @@ using System.Text.RegularExpressions;
 
 namespace CloudinaryDotNet
 {
-  public class Transformation : ICloneable
-  {
+  public class Transformation  //: ICloneable, lets not even go there: http://stackoverflow.com/a/20386650/1275832
+    {
     private static readonly Regex RANGE_VALUE_RE = new Regex("^((?:\\d+\\.)?\\d+)([%pP])?$", RegexOptions.Compiled);
     private static readonly Regex RANGE_RE = new Regex("^(\\d+\\.)?\\d+[%pP]?\\.\\.(\\d+\\.)?\\d+[%pP]?$", RegexOptions.Compiled);
     private static readonly string[] SimpleParams = new string[46]{ "x", "x", "y", "y", "r", "radius", "d", "default_image", "g", "gravity", "cs", "color_space", "p", "prefix", "l", "overlay", "u", "underlay", "f", "fetch_format", "dn", "density", "pg", "page", "dl", "delay", "e", "effect", "bo", "border", "q", "quality", "o", "opacity", "z", "zoom", "ac", "audio_codec", "br", "bit_rate", "af", "audio_frequency", "ar", "aspect_ratio", "vs", "video_sampling" };
@@ -817,7 +817,7 @@ namespace CloudinaryDotNet
         else
         {
           if (!(transformParam is Dictionary<string, string>))
-            throw new ApplicationException(string.Format("Couldn't clone parameter '{0}'!", (object) key));
+            throw new CloudinaryException(string.Format("Couldn't clone parameter '{0}'!", (object) key));
           transformation.Add(key, (object) new Dictionary<string, string>((IDictionary<string, string>) transformParam));
         }
       }
@@ -830,9 +830,9 @@ namespace CloudinaryDotNet
       return transformation;
     }
 
-    object ICloneable.Clone()
-    {
-      return (object) this.Clone();
-    }
+    //object ICloneable.Clone()
+   // {
+   //   return (object) this.Clone();
+    //}
   }
 }

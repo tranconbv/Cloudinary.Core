@@ -6,8 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web;
-using System.Web.UI;
 
 namespace CloudinaryDotNet
 {
@@ -82,11 +80,12 @@ namespace CloudinaryDotNet
     {
     }
 
-    public UrlBuilder(Page page)
-      : base(page.Request.Url.AbsoluteUri)
-    {
-      this.PopulateQueryString();
-    }
+    //No aspx dotnet core
+    //public UrlBuilder(Page page)
+    //  : base(page.Request.Url.AbsoluteUri)
+    //{
+    //  this.PopulateQueryString();
+    //}
 
     public void SetParameters(IDictionary<string, object> @params)
     {
@@ -120,7 +119,8 @@ namespace CloudinaryDotNet
 
     private void _Navigate(bool endResponse)
     {
-      HttpContext.Current.Response.Redirect(this.ToString(), endResponse);
+      throw new NotImplementedException("Needs to use IHttpContextAccassor, and is this even wanted?");
+      //HttpContext.Current.Response.Redirect(this.ToString(), endResponse);
     }
 
     private void PopulateQueryString()

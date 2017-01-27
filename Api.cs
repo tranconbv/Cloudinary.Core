@@ -12,11 +12,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
+using Microsoft.AspNetCore.Html;
 
 namespace CloudinaryDotNet
 {
@@ -120,7 +121,7 @@ namespace CloudinaryDotNet
 
     static Api()
     {
-      Version version = Assembly.GetExecutingAssembly().GetName().Version;
+      Version version = typeof(Api).GetTypeInfo().Assembly.GetName().Version;
       Api.USER_AGENT = string.Format("CloudinaryDotNet/{0}.{1}.{2}", (object) version.Major, (object) version.Minor, (object) version.Build);
     }
 
@@ -166,7 +167,7 @@ namespace CloudinaryDotNet
 
     public static string GetCloudinaryParam<T>(T e)
     {
-      DescriptionAttribute[] customAttributes = (DescriptionAttribute[]) typeof (T).GetField(e.ToString()).GetCustomAttributes(typeof (DescriptionAttribute), false);
+      DescriptionAttribute[] customAttributes = (DescriptionAttribute[]) typeof (T).GetTypeInfo().GetField(e.ToString()).GetCustomAttributes(typeof (DescriptionAttribute), false);
       if (customAttributes.Length == 0)
         throw new ArgumentException("Enum fields must be decorated with DescriptionAttribute!");
       return customAttributes[0].Description;
@@ -174,7 +175,7 @@ namespace CloudinaryDotNet
 
     public static T ParseCloudinaryParam<T>(string s)
     {
-      foreach (FieldInfo field in typeof (T).GetFields())
+      foreach (FieldInfo field in typeof (T).GetTypeInfo().GetFields())
       {
         DescriptionAttribute[] customAttributes = (DescriptionAttribute[]) field.GetCustomAttributes(typeof (DescriptionAttribute), false);
         if (customAttributes.Length != 0 && s == customAttributes[0].Description)
@@ -187,11 +188,11 @@ namespace CloudinaryDotNet
     {
       HttpWebRequest httpWebRequest = this.RequestBuilder(url);
       httpWebRequest.Method = Enum.GetName(typeof (HttpMethod), (object) method);
-      httpWebRequest.UserAgent = string.IsNullOrEmpty(this.UserPlatform) ? Api.USER_AGENT : string.Format("{0} {1}", (object) this.UserPlatform, (object) Api.USER_AGENT);
-      if (this.Timeout > 0)
-        httpWebRequest.Timeout = this.Timeout;
+      httpWebRequest.Headers["User-Agent"] = string.IsNullOrEmpty(this.UserPlatform) ? Api.USER_AGENT : string.Format("{0} {1}", (object) this.UserPlatform, (object) Api.USER_AGENT);
+      //if (this.Timeout > 0)
+      //  httpWebRequest.Timeout = this.Timeout;
       byte[] bytes = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", (object) this.Account.ApiKey, (object) this.Account.ApiSecret));
-      httpWebRequest.Headers.Add("Authorization", string.Format("Basic {0}", (object) Convert.ToBase64String(bytes)));
+      httpWebRequest.Headers["Authorization"] = string.Format("Basic {0}", (object) Convert.ToBase64String(bytes));
       if (extraHeaders != null)
       {
         foreach (KeyValuePair<string, string> extraHeader in extraHeaders)
@@ -204,14 +205,14 @@ namespace CloudinaryDotNet
       }
       if (parameters != null)
       {
-        httpWebRequest.AllowWriteStreamBuffering = false;
-        httpWebRequest.AllowAutoRedirect = false;
-        if (this.UseChunkedEncoding)
-          httpWebRequest.SendChunked = true;
+      //  httpWebRequest.AllowWriteStreamBuffering = false;
+       // httpWebRequest.AllowAutoRedirect = false;
+       // if (this.UseChunkedEncoding)
+       //   httpWebRequest.SendChunked = true;
         httpWebRequest.ContentType = "multipart/form-data; boundary=notrandomsequencetouseasboundary";
         if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
           this.FinalizeUploadParameters((IDictionary<string, object>) parameters);
-        using (Stream requestStream = httpWebRequest.GetRequestStream())
+        using (Stream requestStream = httpWebRequest.GetRequestStreamAsync().Result /*aiai*/)
         {
           using (StreamWriter writer = new StreamWriter(requestStream))
           {
@@ -237,7 +238,7 @@ namespace CloudinaryDotNet
 label_40:
       try
       {
-        return (HttpWebResponse) httpWebRequest.GetResponse();
+        return (HttpWebResponse) httpWebRequest.GetResponseAsync().Result /*aiaiai*/;
       }
       catch (WebException ex)
       {
@@ -264,13 +265,21 @@ label_40:
       {
         parameters["callback"] = (object) this.BuildCallbackUrl(path);
       }
-      catch (HttpException ex)
+      catch (HttpContextNotFoundException ex)
       {
       }
       if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
         this.FinalizeUploadParameters(parameters);
       return JsonConvert.SerializeObject((object) parameters);
     }
+
+      public class HttpContextNotFoundException  //todo move
+            : CloudinaryException
+      {
+          public HttpContextNotFoundException(string format) : base(format)
+          {
+          }
+      }
 
     public string GetUploadUrl(string resourceType = "auto")
     {
@@ -283,12 +292,13 @@ label_40:
         path = "/Content/cloudinary_cors.html";
       if (Regex.IsMatch(path.ToLower(), "^https?:/.*"))
         return path;
-      if (HttpContext.Current != null)
-        return new Uri(HttpContext.Current.Request.Url, path).ToString();
-      throw new HttpException("Http context is not set. Either use this method in the right context or provide an absolute path to file!");
-    }
+      throw new NotImplementedException("Should be implemented with IHttpContextAccessor");
+            //if (HttpContext.Current != null)
+            //  return new Uri(HttpContext.Current.Request.Url, path).ToString();
+            //throw new HttpContextNotFoundException("Http context is not set. Either use this method in the right context or provide an absolute path to file!");
+        }
 
-    public IHtmlString BuildUnsignedUploadForm(string field, string preset, IDictionary<string, object> parameters = null, IDictionary<string, string> htmlOptions = null)
+        public IHtmlContent BuildUnsignedUploadForm(string field, string preset, IDictionary<string, object> parameters = null, IDictionary<string, string> htmlOptions = null)
     {
       if (parameters == null)
         parameters = (IDictionary<string, object>) new SortedDictionary<string, object>();
@@ -297,7 +307,7 @@ label_40:
       return this.BuildUploadForm(field, "image", parameters, htmlOptions);
     }
 
-    public IHtmlString BuildUploadForm(string field, string resourceType, IDictionary<string, object> parameters = null, IDictionary<string, string> htmlOptions = null)
+    public IHtmlContent BuildUploadForm(string field, string resourceType, IDictionary<string, object> parameters = null, IDictionary<string, string> htmlOptions = null)
     {
       if (htmlOptions == null)
         htmlOptions = (IDictionary<string, string>) new Dictionary<string, string>();
@@ -310,10 +320,10 @@ label_40:
       foreach (KeyValuePair<string, string> htmlOption in (IEnumerable<KeyValuePair<string, string>>) htmlOptions)
       {
         if (!(htmlOption.Key == "class"))
-          stringBuilder.Append("' ").Append(htmlOption.Key).Append("='").Append(HttpUtility.HtmlEncode(htmlOption.Value));
+          stringBuilder.Append("' ").Append(htmlOption.Key).Append("='").Append(WebUtility.HtmlEncode(htmlOption.Value));
       }
       stringBuilder.Append("'/>");
-      return (IHtmlString) new HtmlString(stringBuilder.ToString());
+      return (IHtmlContent) new HtmlString(stringBuilder.ToString());
     }
 
     public string SignParameters(IDictionary<string, object> parameters)

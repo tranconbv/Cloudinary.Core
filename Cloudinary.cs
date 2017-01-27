@@ -12,7 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
+using Microsoft.AspNetCore.Html;
 
 namespace CloudinaryDotNet
 {
@@ -753,7 +753,7 @@ namespace CloudinaryDotNet
       return this.GetDownloadUrl(new UrlBuilder(this.m_api.ApiUrlV.ResourceType("image").Action("generate_archive").BuildUrl()), (IDictionary<string, object>) parameters.ToParamsDictionary());
     }
 
-    public IHtmlString GetCloudinaryJsConfig(bool directUpload = false, string dir = "")
+    public IHtmlContent GetCloudinaryJsConfig(bool directUpload = false, string dir = "")
     {
       if (string.IsNullOrEmpty(dir))
         dir = "/Scripts";
@@ -778,7 +778,7 @@ namespace CloudinaryDotNet
       sb.Append(jobject.ToString());
       sb.AppendLine(");");
       sb.AppendLine("</script>");
-      return (IHtmlString) new HtmlString(sb.ToString());
+      return (IHtmlContent) new HtmlString(sb.ToString());
     }
 
     private static void AppendScriptLine(StringBuilder sb, string dir, string script)
