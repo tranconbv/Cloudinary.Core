@@ -170,7 +170,7 @@ namespace CloudinaryDotNet
 
         public HttpWebResponse Call(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
         {
-            var httpWebRequest = RequestBuilder(url);
+            var httpWebRequest = RequestBuilder(url); //Todo migration to http client   
             httpWebRequest.Method = Enum.GetName(typeof(HttpMethod), method);
             httpWebRequest.Headers["User-Agent"] = string.IsNullOrEmpty(UserPlatform) ? USER_AGENT : string.Format("{0} {1}", UserPlatform, USER_AGENT);
             //if (this.Timeout > 0)
@@ -192,7 +192,7 @@ namespace CloudinaryDotNet
                 httpWebRequest.ContentType = "multipart/form-data; boundary=notrandomsequencetouseasboundary";
                 if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
                     FinalizeUploadParameters(parameters);
-                using (var requestStream = httpWebRequest.GetRequestStreamAsync().Result /*aiai*/)
+                using (var requestStream = httpWebRequest.GetRequestStreamAsync().ConfigureAwait(false).GetAwaiter().GetResult() /*aiai*/)
                 {
                     using (var writer = new StreamWriter(requestStream))
                     {
@@ -212,7 +212,7 @@ namespace CloudinaryDotNet
             label_40:
             try
             {
-                return (HttpWebResponse) httpWebRequest.GetResponseAsync().Result /*aiaiai*/;
+                return (HttpWebResponse) httpWebRequest.GetResponseAsync().ConfigureAwait(false).GetAwaiter().GetResult(); /*aiaiai*/;
             }
             catch (WebException ex)
             {
