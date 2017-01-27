@@ -8,39 +8,27 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class TagParams : BaseParams
-  {
-    private List<string> m_publicIds = new List<string>();
-
-    public List<string> PublicIds
+    public class TagParams : BaseParams
     {
-      get
-      {
-        return this.m_publicIds;
-      }
-      set
-      {
-        this.m_publicIds = value;
-      }
+        public List<string> PublicIds { get; set; } = new List<string>();
+
+        public string Tag { get; set; }
+
+        public string Type { get; set; }
+
+        public TagCommand Command { get; set; }
+
+        public override void Check()
+        {
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "tag", Tag);
+            AddParam(paramsDictionary, "public_ids", PublicIds);
+            AddParam(paramsDictionary, "command", Api.GetCloudinaryParam(Command));
+            return paramsDictionary;
+        }
     }
-
-    public string Tag { get; set; }
-
-    public string Type { get; set; }
-
-    public TagCommand Command { get; set; }
-
-    public override void Check()
-    {
-    }
-
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "tag", this.Tag);
-      this.AddParam(paramsDictionary, "public_ids", (IEnumerable<string>) this.PublicIds);
-      this.AddParam(paramsDictionary, "command", Api.GetCloudinaryParam<TagCommand>(this.Command));
-      return paramsDictionary;
-    }
-  }
 }

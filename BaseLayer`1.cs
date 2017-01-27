@@ -8,63 +8,63 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet
 {
-  public abstract class BaseLayer<T> : BaseLayer where T : BaseLayer<T>
-  {
-    protected string m_resourceType;
-    protected string m_type;
-    protected string m_publicId;
-    protected string m_format;
-
-    public T ResourceType(string resourceType)
+    public abstract class BaseLayer<T> : BaseLayer where T : BaseLayer<T>
     {
-      this.m_resourceType = resourceType;
-      return (T) this;
-    }
+        protected string m_format;
+        protected string m_publicId;
+        protected string m_resourceType;
+        protected string m_type;
 
-    public T Type(string type)
-    {
-      this.m_type = type;
-      return (T) this;
-    }
+        public T ResourceType(string resourceType)
+        {
+            m_resourceType = resourceType;
+            return (T) this;
+        }
 
-    public T PublicId(string publicId)
-    {
-      this.m_publicId = publicId.Replace('/', ':');
-      return (T) this;
-    }
+        public T Type(string type)
+        {
+            m_type = type;
+            return (T) this;
+        }
 
-    public T Format(string format)
-    {
-      this.m_format = format;
-      return (T) this;
-    }
+        public T PublicId(string publicId)
+        {
+            m_publicId = publicId.Replace('/', ':');
+            return (T) this;
+        }
 
-    public virtual string AdditionalParams()
-    {
-      return string.Empty;
-    }
+        public T Format(string format)
+        {
+            m_format = format;
+            return (T) this;
+        }
 
-    public override string ToString()
-    {
-      List<string> stringList = new List<string>();
-      if (!string.IsNullOrEmpty(this.m_resourceType) && !this.m_resourceType.Equals("image"))
-        stringList.Add(this.m_resourceType);
-      if (!string.IsNullOrEmpty(this.m_type) && !this.m_type.Equals("upload"))
-        stringList.Add(this.m_type);
-      string str = this.AdditionalParams();
-      if (!string.IsNullOrEmpty(str))
-        stringList.Add(str);
-      if (!string.IsNullOrEmpty(this.m_publicId))
-        stringList.Add(this.FormattedPublicId());
-      return string.Join(":", stringList.ToArray());
-    }
+        public virtual string AdditionalParams()
+        {
+            return string.Empty;
+        }
 
-    private string FormattedPublicId()
-    {
-      string str = this.m_publicId;
-      if (!string.IsNullOrEmpty(this.m_format))
-        str = string.Format("{0}.{1}", (object) str, (object) this.m_format);
-      return str;
+        public override string ToString()
+        {
+            var stringList = new List<string>();
+            if (!string.IsNullOrEmpty(m_resourceType) && !m_resourceType.Equals("image"))
+                stringList.Add(m_resourceType);
+            if (!string.IsNullOrEmpty(m_type) && !m_type.Equals("upload"))
+                stringList.Add(m_type);
+            var str = AdditionalParams();
+            if (!string.IsNullOrEmpty(str))
+                stringList.Add(str);
+            if (!string.IsNullOrEmpty(m_publicId))
+                stringList.Add(FormattedPublicId());
+            return string.Join(":", stringList.ToArray());
+        }
+
+        private string FormattedPublicId()
+        {
+            var str = m_publicId;
+            if (!string.IsNullOrEmpty(m_format))
+                str = string.Format("{0}.{1}", str, m_format);
+            return str;
+        }
     }
-  }
 }

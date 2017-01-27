@@ -10,15 +10,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class GetFoldersResult : BaseResult
-  {
-    [DataMember(Name = "folders")]
-    public List<Folder> Folders { get; set; }
-
-    internal static GetFoldersResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class GetFoldersResult : BaseResult
     {
-      return BaseResult.Parse<GetFoldersResult>(response);
+        [DataMember(Name = "folders")]
+        public List<Folder> Folders { get; set; }
+
+        internal static GetFoldersResult Parse(HttpWebResponse response)
+        {
+            return Parse<GetFoldersResult>(response);
+        }
     }
-  }
 }

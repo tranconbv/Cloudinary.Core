@@ -8,29 +8,29 @@ using System;
 
 namespace CloudinaryDotNet
 {
-  [Serializable]
-  public class Account
-  {
-    public string Cloud { get; set; }
-
-    public string ApiKey { get; set; }
-
-    public string ApiSecret { get; set; }
-
-    public Account()
+    [Serializable]
+    public class Account
     {
-    }
+        public Account()
+        {
+        }
 
-    public Account(string cloud, string apiKey, string apiSecret)
-    {
-      this.Cloud = cloud;
-      this.ApiKey = apiKey;
-      this.ApiSecret = apiSecret;
-    }
+        public Account(string cloud, string apiKey, string apiSecret)
+        {
+            Cloud = cloud;
+            ApiKey = apiKey;
+            ApiSecret = apiSecret;
+        }
 
-    public Account(string cloud)
-    {
-      this.Cloud = cloud;
+        public Account(string cloud)
+        {
+            Cloud = cloud;
+        }
+
+        public string Cloud { get; set; }
+
+        public string ApiKey { get; set; }
+
+        public string ApiSecret { get; set; }
     }
-  }
 }

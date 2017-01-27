@@ -8,10 +8,10 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Predominant
-  {
-    [DataMember(Name = "google")]
-    public object[][] Google { get; protected set; }
-  }
+    [DataContract]
+    public class Predominant
+    {
+        [DataMember(Name = "google")]
+        public object[][] Google { get; protected set; }
+    }
 }

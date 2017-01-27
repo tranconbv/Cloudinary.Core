@@ -1,5 +1,7 @@
 {
-  "version": "1.30.0",
+  "version": "1.30.0-*",
+  "description": "A port of the cloudinary api to dotnet core",
+  "authors": [ "Trancon BV", "Joel Harkes" ],
   "buildOptions": {
     "debugType": "portable"
   },

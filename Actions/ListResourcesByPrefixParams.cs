@@ -8,15 +8,15 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ListResourcesByPrefixParams : ListResourcesParams
-  {
-    public string Prefix { get; set; }
-
-    public override SortedDictionary<string, object> ToParamsDictionary()
+    public class ListResourcesByPrefixParams : ListResourcesParams
     {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "prefix", this.Prefix);
-      return paramsDictionary;
+        public string Prefix { get; set; }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "prefix", Prefix);
+            return paramsDictionary;
+        }
     }
-  }
 }

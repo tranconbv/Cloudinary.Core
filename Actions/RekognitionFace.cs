@@ -9,13 +9,13 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class RekognitionFace
-  {
-    [DataMember(Name = "status")]
-    public string Status { get; protected set; }
+    [DataContract]
+    public class RekognitionFace
+    {
+        [DataMember(Name = "status")]
+        public string Status { get; protected set; }
 
-    [DataMember(Name = "data")]
-    public List<Face> Faces { get; protected set; }
-  }
+        [DataMember(Name = "data")]
+        public List<Face> Faces { get; protected set; }
+    }
 }

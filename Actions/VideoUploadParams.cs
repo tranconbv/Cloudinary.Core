@@ -6,14 +6,11 @@
 
 namespace CloudinaryDotNet.Actions
 {
-  public class VideoUploadParams : ImageUploadParams
-  {
-    public override ResourceType ResourceType
+    public class VideoUploadParams : ImageUploadParams
     {
-      get
-      {
-        return ResourceType.Video;
-      }
+        public override ResourceType ResourceType
+        {
+            get { return ResourceType.Video; }
+        }
     }
-  }
 }

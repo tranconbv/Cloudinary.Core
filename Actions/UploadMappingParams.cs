@@ -9,32 +9,32 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class UploadMappingParams : BaseParams
-  {
-    public string NextCursor { get; set; }
-
-    public int MaxResults { get; set; }
-
-    public string Folder { get; set; }
-
-    public string Template { get; set; }
-
-    public override void Check()
+    public class UploadMappingParams : BaseParams
     {
-      if (this.MaxResults > 500)
-        throw new ArgumentException(string.Format("The maximal count of folders to return is 500, but {0} given!", (object) this.MaxResults));
-    }
+        public string NextCursor { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "folder", this.Folder);
-      this.AddParam(paramsDictionary, "template", this.Template);
-      if (this.MaxResults > 0)
-        this.AddParam(paramsDictionary, "max_results", (float) this.MaxResults);
-      if (!string.IsNullOrEmpty(this.NextCursor))
-        this.AddParam(paramsDictionary, "next_cursor", this.NextCursor);
-      return paramsDictionary;
+        public int MaxResults { get; set; }
+
+        public string Folder { get; set; }
+
+        public string Template { get; set; }
+
+        public override void Check()
+        {
+            if (MaxResults > 500)
+                throw new ArgumentException(string.Format("The maximal count of folders to return is 500, but {0} given!", MaxResults));
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "folder", Folder);
+            AddParam(paramsDictionary, "template", Template);
+            if (MaxResults > 0)
+                AddParam(paramsDictionary, "max_results", MaxResults);
+            if (!string.IsNullOrEmpty(NextCursor))
+                AddParam(paramsDictionary, "next_cursor", NextCursor);
+            return paramsDictionary;
+        }
     }
-  }
 }

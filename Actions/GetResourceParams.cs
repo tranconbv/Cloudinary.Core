@@ -9,55 +9,55 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class GetResourceParams : BaseParams
-  {
-    public string PublicId { get; set; }
-
-    public ResourceType ResourceType { get; set; }
-
-    public string Type { get; set; }
-
-    public bool Exif { get; set; }
-
-    public bool Colors { get; set; }
-
-    public bool Faces { get; set; }
-
-    public bool Metadata { get; set; }
-
-    public bool Coordinates { get; set; }
-
-    public int MaxResults { get; set; }
-
-    public bool Phash { get; set; }
-
-    public GetResourceParams(string publicId)
+    public class GetResourceParams : BaseParams
     {
-      this.PublicId = publicId;
-      this.Type = "upload";
-      this.Exif = false;
-      this.Colors = false;
-      this.Faces = false;
-    }
+        public GetResourceParams(string publicId)
+        {
+            PublicId = publicId;
+            Type = "upload";
+            Exif = false;
+            Colors = false;
+            Faces = false;
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.PublicId))
-        throw new ArgumentException("PublicId must be set!");
-    }
+        public string PublicId { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.MaxResults > 0)
-        this.AddParam(paramsDictionary, "max_results", this.MaxResults.ToString());
-      this.AddParam(paramsDictionary, "exif", this.Exif);
-      this.AddParam(paramsDictionary, "colors", this.Colors);
-      this.AddParam(paramsDictionary, "faces", this.Faces);
-      this.AddParam(paramsDictionary, "image_metadata", this.Metadata);
-      this.AddParam(paramsDictionary, "phash", this.Phash);
-      this.AddParam(paramsDictionary, "coordinates", this.Coordinates);
-      return paramsDictionary;
+        public ResourceType ResourceType { get; set; }
+
+        public string Type { get; set; }
+
+        public bool Exif { get; set; }
+
+        public bool Colors { get; set; }
+
+        public bool Faces { get; set; }
+
+        public bool Metadata { get; set; }
+
+        public bool Coordinates { get; set; }
+
+        public int MaxResults { get; set; }
+
+        public bool Phash { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(PublicId))
+                throw new ArgumentException("PublicId must be set!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (MaxResults > 0)
+                AddParam(paramsDictionary, "max_results", MaxResults.ToString());
+            AddParam(paramsDictionary, "exif", Exif);
+            AddParam(paramsDictionary, "colors", Colors);
+            AddParam(paramsDictionary, "faces", Faces);
+            AddParam(paramsDictionary, "image_metadata", Metadata);
+            AddParam(paramsDictionary, "phash", Phash);
+            AddParam(paramsDictionary, "coordinates", Coordinates);
+            return paramsDictionary;
+        }
     }
-  }
 }

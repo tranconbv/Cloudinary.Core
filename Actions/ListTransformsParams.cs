@@ -8,28 +8,28 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ListTransformsParams : BaseParams
-  {
-    public int MaxResults { get; set; }
-
-    public string NextCursor { get; set; }
-
-    public ListTransformsParams()
+    public class ListTransformsParams : BaseParams
     {
-      this.NextCursor = string.Empty;
-    }
+        public ListTransformsParams()
+        {
+            NextCursor = string.Empty;
+        }
 
-    public override void Check()
-    {
-    }
+        public int MaxResults { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.MaxResults > 0)
-        this.AddParam(paramsDictionary, "max_results", this.MaxResults.ToString());
-      this.AddParam(paramsDictionary, "next_cursor", this.NextCursor);
-      return paramsDictionary;
+        public string NextCursor { get; set; }
+
+        public override void Check()
+        {
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (MaxResults > 0)
+                AddParam(paramsDictionary, "max_results", MaxResults.ToString());
+            AddParam(paramsDictionary, "next_cursor", NextCursor);
+            return paramsDictionary;
+        }
     }
-  }
 }

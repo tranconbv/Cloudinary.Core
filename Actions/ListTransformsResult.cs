@@ -9,18 +9,18 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class ListTransformsResult : BaseResult
-  {
-    [DataMember(Name = "transformations")]
-    public TransformDesc[] Transformations { get; protected set; }
-
-    [DataMember(Name = "next_cursor")]
-    public string NextCursor { get; protected set; }
-
-    internal static ListTransformsResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class ListTransformsResult : BaseResult
     {
-      return BaseResult.Parse<ListTransformsResult>(response);
+        [DataMember(Name = "transformations")]
+        public TransformDesc[] Transformations { get; protected set; }
+
+        [DataMember(Name = "next_cursor")]
+        public string NextCursor { get; protected set; }
+
+        internal static ListTransformsResult Parse(HttpWebResponse response)
+        {
+            return Parse<ListTransformsResult>(response);
+        }
     }
-  }
 }

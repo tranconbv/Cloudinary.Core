@@ -9,39 +9,39 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ExplodeParams : BaseParams
-  {
-    public string PublicId { get; set; }
-
-    public Transformation Transformation { get; set; }
-
-    public string NotificationUrl { get; set; }
-
-    public string Format { get; set; }
-
-    public ExplodeParams(string publicId, Transformation transformation)
+    public class ExplodeParams : BaseParams
     {
-      this.PublicId = publicId;
-      this.Transformation = transformation;
-    }
+        public ExplodeParams(string publicId, Transformation transformation)
+        {
+            PublicId = publicId;
+            Transformation = transformation;
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.PublicId))
-        throw new ArgumentException("PublicId must be set!");
-      if (this.Transformation == null)
-        throw new ArgumentException("Transformation must be set!");
-    }
+        public string PublicId { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "public_id", this.PublicId);
-      this.AddParam(paramsDictionary, "notification_url", this.NotificationUrl);
-      this.AddParam(paramsDictionary, "format", this.Format);
-      if (this.Transformation != null)
-        this.AddParam(paramsDictionary, "transformation", this.Transformation.Generate());
-      return paramsDictionary;
+        public Transformation Transformation { get; set; }
+
+        public string NotificationUrl { get; set; }
+
+        public string Format { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(PublicId))
+                throw new ArgumentException("PublicId must be set!");
+            if (Transformation == null)
+                throw new ArgumentException("Transformation must be set!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "public_id", PublicId);
+            AddParam(paramsDictionary, "notification_url", NotificationUrl);
+            AddParam(paramsDictionary, "format", Format);
+            if (Transformation != null)
+                AddParam(paramsDictionary, "transformation", Transformation.Generate());
+            return paramsDictionary;
+        }
     }
-  }
 }

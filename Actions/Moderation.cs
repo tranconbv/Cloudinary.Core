@@ -9,16 +9,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Moderation
-  {
-    [DataMember(Name = "status")]
-    public ModerationStatus Status;
-    [DataMember(Name = "kind")]
-    public string Kind;
-    [DataMember(Name = "response")]
-    public string Response;
-    [DataMember(Name = "updated_at")]
-    public DateTime UpdatedAt;
-  }
+    [DataContract]
+    public class Moderation
+    {
+        [DataMember(Name = "kind")] public string Kind;
+
+        [DataMember(Name = "response")] public string Response;
+
+        [DataMember(Name = "status")] public ModerationStatus Status;
+
+        [DataMember(Name = "updated_at")] public DateTime UpdatedAt;
+    }
 }

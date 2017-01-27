@@ -9,15 +9,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class RawPartUploadResult : RawUploadResult
-  {
-    [DataMember(Name = "upload_id")]
-    public string UploadId { get; protected set; }
-
-    internal static RawPartUploadResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class RawPartUploadResult : RawUploadResult
     {
-      return BaseResult.Parse<RawPartUploadResult>(response);
+        [DataMember(Name = "upload_id")]
+        public string UploadId { get; protected set; }
+
+        internal static RawPartUploadResult Parse(HttpWebResponse response)
+        {
+            return Parse<RawPartUploadResult>(response);
+        }
     }
-  }
 }

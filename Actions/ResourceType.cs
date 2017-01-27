@@ -8,10 +8,10 @@ using System.ComponentModel;
 
 namespace CloudinaryDotNet.Actions
 {
-  public enum ResourceType
-  {
-    [Description("image")] Image,
-    [Description("raw")] Raw,
-    [Description("video")] Video,
-  }
+    public enum ResourceType
+    {
+        [Description("image")] Image,
+        [Description("raw")] Raw,
+        [Description("video")] Video
+    }
 }

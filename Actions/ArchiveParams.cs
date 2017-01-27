@@ -10,258 +10,258 @@ using System.Linq;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ArchiveParams : BaseParams
-  {
-    private ArchiveCallMode m_mode = ArchiveCallMode.Create;
-    private List<string> m_publicIds;
-    private List<string> m_tags;
-    private List<string> m_prefixes;
-    private string m_resourceType;
-    private string m_type;
-    private List<Transformation> m_transformations;
-    private ArchiveFormat m_targetFormat;
-    private bool m_flattenFolders;
-    private bool m_flattenTransformations;
-    private int m_expiresAt;
-    private bool m_useOriginalFilename;
-    private string m_notificationUrl;
-    private bool m_keepDerived;
-    private string m_targetPublicId;
-    private bool m_async;
-    private List<string> m_targetTags;
-
-    public List<string> PublicIds()
+    public class ArchiveParams : BaseParams
     {
-      return this.m_publicIds;
-    }
+        private bool m_async;
+        private int m_expiresAt;
+        private bool m_flattenFolders;
+        private bool m_flattenTransformations;
+        private bool m_keepDerived;
+        private ArchiveCallMode m_mode = ArchiveCallMode.Create;
+        private string m_notificationUrl;
+        private List<string> m_prefixes;
+        private List<string> m_publicIds;
+        private string m_resourceType;
+        private List<string> m_tags;
+        private ArchiveFormat m_targetFormat;
+        private string m_targetPublicId;
+        private List<string> m_targetTags;
+        private List<Transformation> m_transformations;
+        private string m_type;
+        private bool m_useOriginalFilename;
 
-    public ArchiveParams PublicIds(List<string> publicIds)
-    {
-      this.m_publicIds = publicIds;
-      return this;
-    }
+        public List<string> PublicIds()
+        {
+            return m_publicIds;
+        }
 
-    public List<string> Tags()
-    {
-      return this.m_tags;
-    }
+        public ArchiveParams PublicIds(List<string> publicIds)
+        {
+            m_publicIds = publicIds;
+            return this;
+        }
 
-    public ArchiveParams Tags(List<string> tags)
-    {
-      this.m_tags = tags;
-      return this;
-    }
+        public List<string> Tags()
+        {
+            return m_tags;
+        }
 
-    public List<string> Prefixes()
-    {
-      return this.m_prefixes;
-    }
+        public ArchiveParams Tags(List<string> tags)
+        {
+            m_tags = tags;
+            return this;
+        }
 
-    public ArchiveParams Prefixes(List<string> prefixes)
-    {
-      this.m_prefixes = prefixes;
-      return this;
-    }
+        public List<string> Prefixes()
+        {
+            return m_prefixes;
+        }
 
-    public override void Check()
-    {
-      if ((this.m_publicIds == null || this.m_publicIds.Count == 0) && (this.m_prefixes == null || this.m_prefixes.Count == 0) && (this.m_tags == null || this.m_tags.Count == 0))
-        throw new ArgumentException("At least one of the following \"filtering\" parameters needs to be specified: PublicIds, Tags or Prefixes.");
-    }
+        public ArchiveParams Prefixes(List<string> prefixes)
+        {
+            m_prefixes = prefixes;
+            return this;
+        }
 
-    public virtual ArchiveCallMode Mode()
-    {
-      return this.m_mode;
-    }
+        public override void Check()
+        {
+            if ((m_publicIds == null || m_publicIds.Count == 0) && (m_prefixes == null || m_prefixes.Count == 0) && (m_tags == null || m_tags.Count == 0))
+                throw new ArgumentException("At least one of the following \"filtering\" parameters needs to be specified: PublicIds, Tags or Prefixes.");
+        }
 
-    public ArchiveParams Mode(ArchiveCallMode mode)
-    {
-      this.m_mode = mode;
-      return this;
-    }
+        public virtual ArchiveCallMode Mode()
+        {
+            return m_mode;
+        }
 
-    public string ResourceType()
-    {
-      return this.m_resourceType;
-    }
+        public ArchiveParams Mode(ArchiveCallMode mode)
+        {
+            m_mode = mode;
+            return this;
+        }
 
-    public ArchiveParams ResourceType(string resourceType)
-    {
-      this.m_resourceType = resourceType;
-      return this;
-    }
+        public string ResourceType()
+        {
+            return m_resourceType;
+        }
 
-    public string Type()
-    {
-      return this.m_type;
-    }
+        public ArchiveParams ResourceType(string resourceType)
+        {
+            m_resourceType = resourceType;
+            return this;
+        }
 
-    public ArchiveParams Type(string type)
-    {
-      this.m_type = type;
-      return this;
-    }
+        public string Type()
+        {
+            return m_type;
+        }
 
-    public List<Transformation> Transformations()
-    {
-      return this.m_transformations;
-    }
+        public ArchiveParams Type(string type)
+        {
+            m_type = type;
+            return this;
+        }
 
-    public ArchiveParams Transformations(List<Transformation> transformations)
-    {
-      this.m_transformations = transformations;
-      return this;
-    }
+        public List<Transformation> Transformations()
+        {
+            return m_transformations;
+        }
 
-    public ArchiveFormat TargetFormat()
-    {
-      return this.m_targetFormat;
-    }
+        public ArchiveParams Transformations(List<Transformation> transformations)
+        {
+            m_transformations = transformations;
+            return this;
+        }
 
-    public ArchiveParams TargetFormat(ArchiveFormat targetFormat)
-    {
-      this.m_targetFormat = targetFormat;
-      return this;
-    }
+        public ArchiveFormat TargetFormat()
+        {
+            return m_targetFormat;
+        }
 
-    public string TargetPublicId()
-    {
-      return this.m_targetPublicId;
-    }
+        public ArchiveParams TargetFormat(ArchiveFormat targetFormat)
+        {
+            m_targetFormat = targetFormat;
+            return this;
+        }
 
-    public ArchiveParams TargetPublicId(string targetPublicId)
-    {
-      this.m_targetPublicId = targetPublicId;
-      return this;
-    }
+        public string TargetPublicId()
+        {
+            return m_targetPublicId;
+        }
 
-    public bool IsFlattenFolders()
-    {
-      return this.m_flattenFolders;
-    }
+        public ArchiveParams TargetPublicId(string targetPublicId)
+        {
+            m_targetPublicId = targetPublicId;
+            return this;
+        }
 
-    public ArchiveParams FlattenFolders(bool flattenFolders)
-    {
-      this.m_flattenFolders = flattenFolders;
-      return this;
-    }
+        public bool IsFlattenFolders()
+        {
+            return m_flattenFolders;
+        }
 
-    public bool IsFlattenTransformations()
-    {
-      return this.m_flattenTransformations;
-    }
+        public ArchiveParams FlattenFolders(bool flattenFolders)
+        {
+            m_flattenFolders = flattenFolders;
+            return this;
+        }
 
-    public ArchiveParams FlattenTransformations(bool flattenTransformations)
-    {
-      this.m_flattenTransformations = flattenTransformations;
-      return this;
-    }
+        public bool IsFlattenTransformations()
+        {
+            return m_flattenTransformations;
+        }
 
-    public int ExpiresAt()
-    {
-      return this.m_expiresAt;
-    }
+        public ArchiveParams FlattenTransformations(bool flattenTransformations)
+        {
+            m_flattenTransformations = flattenTransformations;
+            return this;
+        }
 
-    public ArchiveParams ExpiresAt(int expiresAt)
-    {
-      this.m_expiresAt = expiresAt;
-      return this;
-    }
+        public int ExpiresAt()
+        {
+            return m_expiresAt;
+        }
 
-    public bool IsUseOriginalFilename()
-    {
-      return this.m_useOriginalFilename;
-    }
+        public ArchiveParams ExpiresAt(int expiresAt)
+        {
+            m_expiresAt = expiresAt;
+            return this;
+        }
 
-    public ArchiveParams UseOriginalFilename(bool useOriginalFilename)
-    {
-      this.m_useOriginalFilename = useOriginalFilename;
-      return this;
-    }
+        public bool IsUseOriginalFilename()
+        {
+            return m_useOriginalFilename;
+        }
 
-    public bool IsAsync()
-    {
-      return this.m_async;
-    }
+        public ArchiveParams UseOriginalFilename(bool useOriginalFilename)
+        {
+            m_useOriginalFilename = useOriginalFilename;
+            return this;
+        }
 
-    public ArchiveParams Async(bool async)
-    {
-      this.m_async = async;
-      return this;
-    }
+        public bool IsAsync()
+        {
+            return m_async;
+        }
 
-    public string NotificationUrl()
-    {
-      return this.m_notificationUrl;
-    }
+        public ArchiveParams Async(bool async)
+        {
+            m_async = async;
+            return this;
+        }
 
-    public ArchiveParams NotificationUrl(string notificationUrl)
-    {
-      this.m_notificationUrl = notificationUrl;
-      return this;
-    }
+        public string NotificationUrl()
+        {
+            return m_notificationUrl;
+        }
 
-    public List<string> TargetTags()
-    {
-      return this.m_targetTags;
-    }
+        public ArchiveParams NotificationUrl(string notificationUrl)
+        {
+            m_notificationUrl = notificationUrl;
+            return this;
+        }
 
-    public ArchiveParams TargetTags(List<string> targetTags)
-    {
-      this.m_targetTags = targetTags;
-      return this;
-    }
+        public List<string> TargetTags()
+        {
+            return m_targetTags;
+        }
 
-    public bool IsKeepDerived()
-    {
-      return this.m_keepDerived;
-    }
+        public ArchiveParams TargetTags(List<string> targetTags)
+        {
+            m_targetTags = targetTags;
+            return this;
+        }
 
-    public ArchiveParams KeepDerived(bool keepDerived)
-    {
-      this.m_keepDerived = keepDerived;
-      return this;
-    }
+        public bool IsKeepDerived()
+        {
+            return m_keepDerived;
+        }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      this.Check();
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "mode", Api.GetCloudinaryParam<ArchiveCallMode>(this.Mode()));
-      if (this.m_tags != null && this.m_tags.Count > 0)
-        this.AddParam(paramsDictionary, "tags", (IEnumerable<string>) this.m_tags);
-      if (this.m_publicIds != null && this.m_publicIds.Count > 0)
-        this.AddParam(paramsDictionary, "public_ids", (IEnumerable<string>) this.m_publicIds);
-      if (this.m_prefixes != null && this.m_prefixes.Count > 0)
-        this.AddParam(paramsDictionary, "prefixes", (IEnumerable<string>) this.m_prefixes);
-      if (!string.IsNullOrEmpty(this.m_type))
-        this.AddParam(paramsDictionary, "type", this.m_type);
-      if (this.m_transformations != null && this.m_transformations.Count > 0)
-        this.AddParam(paramsDictionary, "transformations", string.Join("/", this.m_transformations.Select(t => t.ToString()).ToArray()));
-      if (this.m_targetFormat != ArchiveFormat.Zip)
-        this.AddParam(paramsDictionary, "target_format", Api.GetCloudinaryParam<ArchiveFormat>(this.m_targetFormat));
-      if (this.m_flattenFolders)
-        this.AddParam(paramsDictionary, "flatten_folders", this.m_flattenFolders);
-      if (this.m_flattenTransformations)
-        this.AddParam(paramsDictionary, "flatten_transformations", this.m_flattenTransformations);
-      if (this.m_useOriginalFilename)
-        this.AddParam(paramsDictionary, "use_original_filename", this.m_useOriginalFilename);
-      if (!string.IsNullOrEmpty(this.m_notificationUrl))
-        this.AddParam(paramsDictionary, "notification_url", this.m_notificationUrl);
-      if (this.m_keepDerived)
-        this.AddParam(paramsDictionary, "keep_derived", this.m_keepDerived);
-      if (this.m_mode == ArchiveCallMode.Create)
-      {
-        if (this.m_async)
-          this.AddParam(paramsDictionary, "async", this.m_async);
-        if (!string.IsNullOrEmpty(this.m_targetPublicId))
-          this.AddParam(paramsDictionary, "target_public_id", this.m_targetPublicId);
-        if (this.m_targetTags != null && this.m_targetTags.Count > 0)
-          this.AddParam(paramsDictionary, "target_tags", (IEnumerable<string>) this.m_targetTags);
-      }
-      if (this.m_expiresAt > 0 && this.m_mode == ArchiveCallMode.Download)
-        this.AddParam(paramsDictionary, "expires_at", (float) this.m_expiresAt);
-      return paramsDictionary;
+        public ArchiveParams KeepDerived(bool keepDerived)
+        {
+            m_keepDerived = keepDerived;
+            return this;
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            Check();
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "mode", Api.GetCloudinaryParam(Mode()));
+            if (m_tags != null && m_tags.Count > 0)
+                AddParam(paramsDictionary, "tags", m_tags);
+            if (m_publicIds != null && m_publicIds.Count > 0)
+                AddParam(paramsDictionary, "public_ids", m_publicIds);
+            if (m_prefixes != null && m_prefixes.Count > 0)
+                AddParam(paramsDictionary, "prefixes", m_prefixes);
+            if (!string.IsNullOrEmpty(m_type))
+                AddParam(paramsDictionary, "type", m_type);
+            if (m_transformations != null && m_transformations.Count > 0)
+                AddParam(paramsDictionary, "transformations", string.Join("/", m_transformations.Select(t => t.ToString()).ToArray()));
+            if (m_targetFormat != ArchiveFormat.Zip)
+                AddParam(paramsDictionary, "target_format", Api.GetCloudinaryParam(m_targetFormat));
+            if (m_flattenFolders)
+                AddParam(paramsDictionary, "flatten_folders", m_flattenFolders);
+            if (m_flattenTransformations)
+                AddParam(paramsDictionary, "flatten_transformations", m_flattenTransformations);
+            if (m_useOriginalFilename)
+                AddParam(paramsDictionary, "use_original_filename", m_useOriginalFilename);
+            if (!string.IsNullOrEmpty(m_notificationUrl))
+                AddParam(paramsDictionary, "notification_url", m_notificationUrl);
+            if (m_keepDerived)
+                AddParam(paramsDictionary, "keep_derived", m_keepDerived);
+            if (m_mode == ArchiveCallMode.Create)
+            {
+                if (m_async)
+                    AddParam(paramsDictionary, "async", m_async);
+                if (!string.IsNullOrEmpty(m_targetPublicId))
+                    AddParam(paramsDictionary, "target_public_id", m_targetPublicId);
+                if (m_targetTags != null && m_targetTags.Count > 0)
+                    AddParam(paramsDictionary, "target_tags", m_targetTags);
+            }
+            if (m_expiresAt > 0 && m_mode == ArchiveCallMode.Download)
+                AddParam(paramsDictionary, "expires_at", m_expiresAt);
+            return paramsDictionary;
+        }
     }
-  }
 }

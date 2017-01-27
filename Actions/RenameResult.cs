@@ -8,11 +8,11 @@ using System.Net;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class RenameResult : GetResourceResult
-  {
-    internal static RenameResult Parse(HttpWebResponse response)
+    public class RenameResult : GetResourceResult
     {
-      return BaseResult.Parse<RenameResult>(response);
+        internal static RenameResult Parse(HttpWebResponse response)
+        {
+            return Parse<RenameResult>(response);
+        }
     }
-  }
 }

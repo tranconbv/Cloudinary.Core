@@ -8,8 +8,8 @@ using System.ComponentModel;
 
 namespace CloudinaryDotNet.Actions
 {
-  public enum ArchiveFormat
-  {
-    [Description("zip")] Zip,
-  }
+    public enum ArchiveFormat
+    {
+        [Description("zip")] Zip
+    }
 }

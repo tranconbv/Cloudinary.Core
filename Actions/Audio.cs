@@ -8,22 +8,22 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Audio
-  {
-    [DataMember(Name = "codec")]
-    public string Codec { get; protected set; }
+    [DataContract]
+    public class Audio
+    {
+        [DataMember(Name = "codec")]
+        public string Codec { get; protected set; }
 
-    [DataMember(Name = "bit_rate")]
-    public int? BitRate { get; protected set; }
+        [DataMember(Name = "bit_rate")]
+        public int? BitRate { get; protected set; }
 
-    [DataMember(Name = "frequency")]
-    public int? Frequency { get; protected set; }
+        [DataMember(Name = "frequency")]
+        public int? Frequency { get; protected set; }
 
-    [DataMember(Name = "channels")]
-    public int? Channels { get; protected set; }
+        [DataMember(Name = "channels")]
+        public int? Channels { get; protected set; }
 
-    [DataMember(Name = "channel_layout")]
-    public string ChannelLayout { get; protected set; }
-  }
+        [DataMember(Name = "channel_layout")]
+        public string ChannelLayout { get; protected set; }
+    }
 }

@@ -11,33 +11,33 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class SpriteResult : BaseResult
-  {
-    [DataMember(Name = "css_url")]
-    public Uri CssUri { get; protected set; }
-
-    [DataMember(Name = "secure_css_url")]
-    public Uri SecureCssUri { get; protected set; }
-
-    [DataMember(Name = "image_url")]
-    public Uri ImageUri { get; protected set; }
-
-    [DataMember(Name = "json_url")]
-    public Uri JsonUri { get; protected set; }
-
-    [DataMember(Name = "public_id")]
-    public string PublicId { get; protected set; }
-
-    [DataMember(Name = "version")]
-    public string Version { get; protected set; }
-
-    [DataMember(Name = "image_infos")]
-    public Dictionary<string, ImageInfo> ImageInfos { get; protected set; }
-
-    internal static SpriteResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class SpriteResult : BaseResult
     {
-      return BaseResult.Parse<SpriteResult>(response);
+        [DataMember(Name = "css_url")]
+        public Uri CssUri { get; protected set; }
+
+        [DataMember(Name = "secure_css_url")]
+        public Uri SecureCssUri { get; protected set; }
+
+        [DataMember(Name = "image_url")]
+        public Uri ImageUri { get; protected set; }
+
+        [DataMember(Name = "json_url")]
+        public Uri JsonUri { get; protected set; }
+
+        [DataMember(Name = "public_id")]
+        public string PublicId { get; protected set; }
+
+        [DataMember(Name = "version")]
+        public string Version { get; protected set; }
+
+        [DataMember(Name = "image_infos")]
+        public Dictionary<string, ImageInfo> ImageInfos { get; protected set; }
+
+        internal static SpriteResult Parse(HttpWebResponse response)
+        {
+            return Parse<SpriteResult>(response);
+        }
     }
-  }
 }

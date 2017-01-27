@@ -6,7 +6,6 @@ namespace CloudinaryDotNet
     {
         public CloudinaryException(string format) : base(format)
         {
-            
         }
     }
 }

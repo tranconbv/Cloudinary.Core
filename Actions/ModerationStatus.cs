@@ -8,11 +8,11 @@ using System.ComponentModel;
 
 namespace CloudinaryDotNet.Actions
 {
-  public enum ModerationStatus
-  {
-    [Description("pending")] Pending,
-    [Description("rejected")] Rejected,
-    [Description("approved")] Approved,
-    [Description("overridden")] Overridden,
-  }
+    public enum ModerationStatus
+    {
+        [Description("pending")] Pending,
+        [Description("rejected")] Rejected,
+        [Description("approved")] Approved,
+        [Description("overridden")] Overridden
+    }
 }

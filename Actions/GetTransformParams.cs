@@ -9,29 +9,29 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class GetTransformParams : BaseParams
-  {
-    public string Transformation { get; set; }
-
-    public int MaxResults { get; set; }
-
-    public GetTransformParams()
+    public class GetTransformParams : BaseParams
     {
-      this.Transformation = string.Empty;
-    }
+        public GetTransformParams()
+        {
+            Transformation = string.Empty;
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.Transformation))
-        throw new ArgumentException("Transformation must be set!");
-    }
+        public string Transformation { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.MaxResults > 0)
-        this.AddParam(paramsDictionary, "max_results", this.MaxResults.ToString());
-      return paramsDictionary;
+        public int MaxResults { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(Transformation))
+                throw new ArgumentException("Transformation must be set!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (MaxResults > 0)
+                AddParam(paramsDictionary, "max_results", MaxResults.ToString());
+            return paramsDictionary;
+        }
     }
-  }
 }

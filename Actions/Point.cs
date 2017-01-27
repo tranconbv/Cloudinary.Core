@@ -8,13 +8,13 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Point
-  {
-    [DataMember(Name = "x")]
-    public double X { get; protected set; }
+    [DataContract]
+    public class Point
+    {
+        [DataMember(Name = "x")]
+        public double X { get; protected set; }
 
-    [DataMember(Name = "y")]
-    public double Y { get; protected set; }
-  }
+        [DataMember(Name = "y")]
+        public double Y { get; protected set; }
+    }
 }

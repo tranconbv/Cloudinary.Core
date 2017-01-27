@@ -10,18 +10,18 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class ListUploadPresetsResult : BaseResult
-  {
-    [DataMember(Name = "presets")]
-    public List<GetUploadPresetResult> Presets { get; protected set; }
-
-    [DataMember(Name = "next_cursor")]
-    public string NextCursor { get; protected set; }
-
-    internal static ListUploadPresetsResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class ListUploadPresetsResult : BaseResult
     {
-      return BaseResult.Parse<ListUploadPresetsResult>(response);
+        [DataMember(Name = "presets")]
+        public List<GetUploadPresetResult> Presets { get; protected set; }
+
+        [DataMember(Name = "next_cursor")]
+        public string NextCursor { get; protected set; }
+
+        internal static ListUploadPresetsResult Parse(HttpWebResponse response)
+        {
+            return Parse<ListUploadPresetsResult>(response);
+        }
     }
-  }
 }

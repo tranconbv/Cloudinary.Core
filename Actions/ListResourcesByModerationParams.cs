@@ -9,25 +9,25 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ListResourcesByModerationParams : ListResourcesParams
-  {
-    public string ModerationKind { get; set; }
-
-    public ModerationStatus ModerationStatus { get; set; }
-
-    public override void Check()
+    public class ListResourcesByModerationParams : ListResourcesParams
     {
-      base.Check();
-      if (string.IsNullOrEmpty(this.ModerationKind))
-        throw new ArgumentException("ModerationKind must be set to filter resources by moderation kind/status!");
-    }
+        public string ModerationKind { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (paramsDictionary.ContainsKey("type"))
-        paramsDictionary.Remove("type");
-      return paramsDictionary;
+        public ModerationStatus ModerationStatus { get; set; }
+
+        public override void Check()
+        {
+            base.Check();
+            if (string.IsNullOrEmpty(ModerationKind))
+                throw new ArgumentException("ModerationKind must be set to filter resources by moderation kind/status!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (paramsDictionary.ContainsKey("type"))
+                paramsDictionary.Remove("type");
+            return paramsDictionary;
+        }
     }
-  }
 }

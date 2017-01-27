@@ -9,36 +9,36 @@ using System.Linq;
 
 namespace CloudinaryDotNet
 {
-  public class EagerTransformation : Transformation
-  {
-    public string Format { get; set; }
-
-    public EagerTransformation(params Transformation[] transforms)
-      : base(((IEnumerable<Transformation>) transforms).ToList<Transformation>())
+    public class EagerTransformation : Transformation
     {
-    }
+        public EagerTransformation(params Transformation[] transforms)
+            : base(transforms.ToList())
+        {
+        }
 
-    public EagerTransformation(List<Transformation> transforms)
-      : base(transforms)
-    {
-    }
+        public EagerTransformation(List<Transformation> transforms)
+            : base(transforms)
+        {
+        }
 
-    public EagerTransformation()
-    {
-    }
+        public EagerTransformation()
+        {
+        }
 
-    public EagerTransformation SetFormat(string format)
-    {
-      this.Format = format;
-      return this;
-    }
+        public string Format { get; set; }
 
-    public override string Generate()
-    {
-      string str = base.Generate();
-      if (!string.IsNullOrEmpty(this.Format))
-        str = str + "/" + this.Format;
-      return str;
+        public EagerTransformation SetFormat(string format)
+        {
+            Format = format;
+            return this;
+        }
+
+        public override string Generate()
+        {
+            var str = base.Generate();
+            if (!string.IsNullOrEmpty(Format))
+                str = str + "/" + Format;
+            return str;
+        }
     }
-  }
 }

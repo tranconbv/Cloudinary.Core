@@ -8,39 +8,39 @@ using System;
 
 namespace CloudinaryDotNet
 {
-  public class VideoLayer : BaseLayer<VideoLayer>
-  {
-    public VideoLayer()
+    public class VideoLayer : BaseLayer<VideoLayer>
     {
-      this.m_resourceType = "video";
-    }
+        public VideoLayer()
+        {
+            m_resourceType = "video";
+        }
 
-    public VideoLayer(string publicId)
-      : this()
-    {
-      this.PublicId(publicId);
-    }
+        public VideoLayer(string publicId)
+            : this()
+        {
+            PublicId(publicId);
+        }
 
-    public new VideoLayer ResourceType(string resourceType)
-    {
-      throw new InvalidOperationException("Cannot modify resourceType for video layers");
-    }
+        public new VideoLayer ResourceType(string resourceType)
+        {
+            throw new InvalidOperationException("Cannot modify resourceType for video layers");
+        }
 
-    public new VideoLayer Type(string type)
-    {
-      throw new InvalidOperationException("Cannot modify type for video layers");
-    }
+        public new VideoLayer Type(string type)
+        {
+            throw new InvalidOperationException("Cannot modify type for video layers");
+        }
 
-    public new VideoLayer Format(string format)
-    {
-      throw new InvalidOperationException("Cannot modify format for video layers");
-    }
+        public new VideoLayer Format(string format)
+        {
+            throw new InvalidOperationException("Cannot modify format for video layers");
+        }
 
-    public override string ToString()
-    {
-      if (string.IsNullOrEmpty(this.m_publicId))
-        throw new ArgumentException("Must supply publicId.");
-      return base.ToString();
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(m_publicId))
+                throw new ArgumentException("Must supply publicId.");
+            return base.ToString();
+        }
     }
-  }
 }

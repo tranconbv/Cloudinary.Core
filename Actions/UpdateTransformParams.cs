@@ -9,32 +9,32 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class UpdateTransformParams : BaseParams
-  {
-    public string Transformation { get; set; }
-
-    public CloudinaryDotNet.Transformation UnsafeTransform { get; set; }
-
-    public bool Strict { get; set; }
-
-    public UpdateTransformParams()
+    public class UpdateTransformParams : BaseParams
     {
-      this.Transformation = string.Empty;
-    }
+        public UpdateTransformParams()
+        {
+            Transformation = string.Empty;
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.Transformation))
-        throw new ArgumentException("Transformation must be set!");
-    }
+        public string Transformation { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "allowed_for_strict", this.Strict ? "true" : "false");
-      if (this.UnsafeTransform != null)
-        this.AddParam(paramsDictionary, "unsafe_update", this.UnsafeTransform.Generate());
-      return paramsDictionary;
+        public Transformation UnsafeTransform { get; set; }
+
+        public bool Strict { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(Transformation))
+                throw new ArgumentException("Transformation must be set!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "allowed_for_strict", Strict ? "true" : "false");
+            if (UnsafeTransform != null)
+                AddParam(paramsDictionary, "unsafe_update", UnsafeTransform.Generate());
+            return paramsDictionary;
+        }
     }
-  }
 }

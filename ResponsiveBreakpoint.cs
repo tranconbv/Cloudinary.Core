@@ -8,79 +8,79 @@ using Newtonsoft.Json.Linq;
 
 namespace CloudinaryDotNet
 {
-  public class ResponsiveBreakpoint : JObject
-  {
-    private const string CREATE_DERIVED = "create_derived";
-    private const string TRANSFORMATION = "transformation";
-    private const string MAX_WIDTH = "max_width";
-    private const string MIN_WIDTH = "min_width";
-    private const string BYTES_STEP = "bytes_step";
-    private const string MAX_IMAGES = "max_images";
-
-    public ResponsiveBreakpoint()
+    public class ResponsiveBreakpoint : JObject
     {
-      this.Add("create_derived", (JToken) true);
-    }
+        private const string CREATE_DERIVED = "create_derived";
+        private const string TRANSFORMATION = "transformation";
+        private const string MAX_WIDTH = "max_width";
+        private const string MIN_WIDTH = "min_width";
+        private const string BYTES_STEP = "bytes_step";
+        private const string MAX_IMAGES = "max_images";
 
-    public bool IsCreateDerived()
-    {
-      return this.GetValue("create_derived").Value<bool>();
-    }
+        public ResponsiveBreakpoint()
+        {
+            Add("create_derived", true);
+        }
 
-    public ResponsiveBreakpoint CreateDerived(bool createDerived)
-    {
-      this["create_derived"] = (JToken) createDerived;
-      return this;
-    }
+        public bool IsCreateDerived()
+        {
+            return GetValue("create_derived").Value<bool>();
+        }
 
-    public ResponsiveBreakpoint Transformation(Transformation transformation)
-    {
-      this["transformation"] = (JToken) transformation.ToString();
-      return this;
-    }
+        public ResponsiveBreakpoint CreateDerived(bool createDerived)
+        {
+            this["create_derived"] = createDerived;
+            return this;
+        }
 
-    public int MaxWidth()
-    {
-      return this.Value<int>((object) "max_width");
-    }
+        public ResponsiveBreakpoint Transformation(Transformation transformation)
+        {
+            this["transformation"] = transformation.ToString();
+            return this;
+        }
 
-    public ResponsiveBreakpoint MaxWidth(int maxWidth)
-    {
-      this["max_width"] = (JToken) maxWidth;
-      return this;
-    }
+        public int MaxWidth()
+        {
+            return Value<int>("max_width");
+        }
 
-    public int MinWidth()
-    {
-      return this.Value<int>((object) "min_width");
-    }
+        public ResponsiveBreakpoint MaxWidth(int maxWidth)
+        {
+            this["max_width"] = maxWidth;
+            return this;
+        }
 
-    public ResponsiveBreakpoint MinWidth(int minWidth)
-    {
-      this["min_width"] = (JToken) minWidth;
-      return this;
-    }
+        public int MinWidth()
+        {
+            return Value<int>("min_width");
+        }
 
-    public int BytesStep()
-    {
-      return this.Value<int>((object) "bytes_step");
-    }
+        public ResponsiveBreakpoint MinWidth(int minWidth)
+        {
+            this["min_width"] = minWidth;
+            return this;
+        }
 
-    public ResponsiveBreakpoint BytesStep(int bytesStep)
-    {
-      this["bytes_step"] = (JToken) bytesStep;
-      return this;
-    }
+        public int BytesStep()
+        {
+            return Value<int>("bytes_step");
+        }
 
-    public int MaxImages()
-    {
-      return this.Value<int>((object) "max_images");
-    }
+        public ResponsiveBreakpoint BytesStep(int bytesStep)
+        {
+            this["bytes_step"] = bytesStep;
+            return this;
+        }
 
-    public ResponsiveBreakpoint MaxImages(int maxImages)
-    {
-      this["max_images"] = (JToken) maxImages;
-      return this;
+        public int MaxImages()
+        {
+            return Value<int>("max_images");
+        }
+
+        public ResponsiveBreakpoint MaxImages(int maxImages)
+        {
+            this["max_images"] = maxImages;
+            return this;
+        }
     }
-  }
 }

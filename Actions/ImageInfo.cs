@@ -8,19 +8,19 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class ImageInfo
-  {
-    [DataMember(Name = "width")]
-    public int Width { get; protected set; }
+    [DataContract]
+    public class ImageInfo
+    {
+        [DataMember(Name = "width")]
+        public int Width { get; protected set; }
 
-    [DataMember(Name = "height")]
-    public int Height { get; protected set; }
+        [DataMember(Name = "height")]
+        public int Height { get; protected set; }
 
-    [DataMember(Name = "x")]
-    public int X { get; protected set; }
+        [DataMember(Name = "x")]
+        public int X { get; protected set; }
 
-    [DataMember(Name = "y")]
-    public int Y { get; protected set; }
-  }
+        [DataMember(Name = "y")]
+        public int Y { get; protected set; }
+    }
 }

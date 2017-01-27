@@ -10,15 +10,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class DelDerivedResResult : BaseResult
-  {
-    [DataMember(Name = "deleted")]
-    public Dictionary<string, string> Deleted { get; protected set; }
-
-    internal static DelDerivedResResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class DelDerivedResResult : BaseResult
     {
-      return BaseResult.Parse<DelDerivedResResult>(response);
+        [DataMember(Name = "deleted")]
+        public Dictionary<string, string> Deleted { get; protected set; }
+
+        internal static DelDerivedResResult Parse(HttpWebResponse response)
+        {
+            return Parse<DelDerivedResResult>(response);
+        }
     }
-  }
 }

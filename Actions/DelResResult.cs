@@ -10,21 +10,21 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class DelResResult : BaseResult
-  {
-    [DataMember(Name = "deleted")]
-    public Dictionary<string, string> Deleted { get; protected set; }
-
-    [DataMember(Name = "next_cursor")]
-    public string NextCursor { get; protected set; }
-
-    [DataMember(Name = "partial")]
-    public bool Partial { get; protected set; }
-
-    internal static DelResResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class DelResResult : BaseResult
     {
-      return BaseResult.Parse<DelResResult>(response);
+        [DataMember(Name = "deleted")]
+        public Dictionary<string, string> Deleted { get; protected set; }
+
+        [DataMember(Name = "next_cursor")]
+        public string NextCursor { get; protected set; }
+
+        [DataMember(Name = "partial")]
+        public bool Partial { get; protected set; }
+
+        internal static DelResResult Parse(HttpWebResponse response)
+        {
+            return Parse<DelResResult>(response);
+        }
     }
-  }
 }

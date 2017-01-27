@@ -9,57 +9,34 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class RestoreParams : BaseParams
-  {
-    private List<string> m_publicIds = new List<string>();
-    private ResourceType m_resourceType;
-
-    public List<string> PublicIds
+    public class RestoreParams : BaseParams
     {
-      get
-      {
-        return this.m_publicIds;
-      }
-      set
-      {
-        this.m_publicIds = value;
-      }
-    }
+        public List<string> PublicIds { get; set; } = new List<string>();
 
-    private bool PublicIdsExist
-    {
-      get
-      {
-        if (this.PublicIds != null)
-          return this.PublicIds.Count > 0;
-        return false;
-      }
-    }
+        private bool PublicIdsExist
+        {
+            get
+            {
+                if (PublicIds != null)
+                    return PublicIds.Count > 0;
+                return false;
+            }
+        }
 
-    public ResourceType ResourceType
-    {
-      get
-      {
-        return this.m_resourceType;
-      }
-      set
-      {
-        this.m_resourceType = value;
-      }
-    }
+        public ResourceType ResourceType { get; set; }
 
-    public override void Check()
-    {
-      if (!this.PublicIdsExist)
-        throw new ArgumentException("At least one PublicId must be specified!");
-    }
+        public override void Check()
+        {
+            if (!PublicIdsExist)
+                throw new ArgumentException("At least one PublicId must be specified!");
+        }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.PublicIdsExist)
-        paramsDictionary.Add("public_ids", (object) this.PublicIds);
-      return paramsDictionary;
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (PublicIdsExist)
+                paramsDictionary.Add("public_ids", PublicIds);
+            return paramsDictionary;
+        }
     }
-  }
 }

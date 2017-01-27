@@ -8,11 +8,11 @@ using System.ComponentModel;
 
 namespace CloudinaryDotNet.Actions
 {
-  public enum TagCommand
-  {
-    [Description("add")] Add,
-    [Description("remove")] Remove,
-    [Description("replace")] Replace,
-    [Description("set_exclusive")] SetExclusive,
-  }
+    public enum TagCommand
+    {
+        [Description("add")] Add,
+        [Description("remove")] Remove,
+        [Description("replace")] Replace,
+        [Description("set_exclusive")] SetExclusive
+    }
 }

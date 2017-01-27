@@ -8,34 +8,34 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ListTagsParams : BaseParams
-  {
-    public ResourceType ResourceType { get; set; }
-
-    public string Prefix { get; set; }
-
-    public int MaxResults { get; set; }
-
-    public string NextCursor { get; set; }
-
-    public ListTagsParams()
+    public class ListTagsParams : BaseParams
     {
-      this.NextCursor = string.Empty;
-      this.Prefix = string.Empty;
-    }
+        public ListTagsParams()
+        {
+            NextCursor = string.Empty;
+            Prefix = string.Empty;
+        }
 
-    public override void Check()
-    {
-    }
+        public ResourceType ResourceType { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.MaxResults > 0)
-        this.AddParam(paramsDictionary, "max_results", this.MaxResults.ToString());
-      this.AddParam(paramsDictionary, "next_cursor", this.NextCursor);
-      this.AddParam(paramsDictionary, "prefix", this.Prefix);
-      return paramsDictionary;
+        public string Prefix { get; set; }
+
+        public int MaxResults { get; set; }
+
+        public string NextCursor { get; set; }
+
+        public override void Check()
+        {
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (MaxResults > 0)
+                AddParam(paramsDictionary, "max_results", MaxResults.ToString());
+            AddParam(paramsDictionary, "next_cursor", NextCursor);
+            AddParam(paramsDictionary, "prefix", Prefix);
+            return paramsDictionary;
+        }
     }
-  }
 }

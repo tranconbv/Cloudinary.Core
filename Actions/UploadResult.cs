@@ -9,19 +9,19 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public abstract class UploadResult : BaseResult
-  {
-    [DataMember(Name = "public_id")]
-    public string PublicId { get; protected set; }
+    [DataContract]
+    public abstract class UploadResult : BaseResult
+    {
+        [DataMember(Name = "public_id")]
+        public string PublicId { get; protected set; }
 
-    [DataMember(Name = "version")]
-    public string Version { get; protected set; }
+        [DataMember(Name = "version")]
+        public string Version { get; protected set; }
 
-    [DataMember(Name = "url")]
-    public Uri Uri { get; protected set; }
+        [DataMember(Name = "url")]
+        public Uri Uri { get; protected set; }
 
-    [DataMember(Name = "secure_url")]
-    public Uri SecureUri { get; protected set; }
-  }
+        [DataMember(Name = "secure_url")]
+        public Uri SecureUri { get; protected set; }
+    }
 }

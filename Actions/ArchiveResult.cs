@@ -8,27 +8,27 @@ using System.Net;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ArchiveResult : BaseResult
-  {
-    public string Url { get; private set; }
-
-    public string SecureUrl { get; private set; }
-
-    public string PublicId { get; private set; }
-
-    public long Bytes { get; private set; }
-
-    public int FileCount { get; private set; }
-
-    internal static ArchiveResult Parse(HttpWebResponse response)
+    public class ArchiveResult : BaseResult
     {
-      ArchiveResult archiveResult = BaseResult.Parse<ArchiveResult>(response);
-      archiveResult.Url = archiveResult.JsonObj.Value<string>((object) "url");
-      archiveResult.SecureUrl = archiveResult.JsonObj.Value<string>((object) "secure_url");
-      archiveResult.PublicId = archiveResult.JsonObj.Value<string>((object) "public_id");
-      archiveResult.Bytes = archiveResult.JsonObj.Value<long>((object) "bytes");
-      archiveResult.FileCount = archiveResult.JsonObj.Value<int>((object) "file_count");
-      return archiveResult;
+        public string Url { get; private set; }
+
+        public string SecureUrl { get; private set; }
+
+        public string PublicId { get; private set; }
+
+        public long Bytes { get; private set; }
+
+        public int FileCount { get; private set; }
+
+        internal static ArchiveResult Parse(HttpWebResponse response)
+        {
+            var archiveResult = Parse<ArchiveResult>(response);
+            archiveResult.Url = archiveResult.JsonObj.Value<string>("url");
+            archiveResult.SecureUrl = archiveResult.JsonObj.Value<string>("secure_url");
+            archiveResult.PublicId = archiveResult.JsonObj.Value<string>("public_id");
+            archiveResult.Bytes = archiveResult.JsonObj.Value<long>("bytes");
+            archiveResult.FileCount = archiveResult.JsonObj.Value<int>("file_count");
+            return archiveResult;
+        }
     }
-  }
 }

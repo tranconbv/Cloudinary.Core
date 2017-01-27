@@ -8,25 +8,25 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ListSpecificResourcesParams : ListResourcesParams
-  {
-    public List<string> PublicIds { get; set; }
-
-    public ListSpecificResourcesParams()
+    public class ListSpecificResourcesParams : ListResourcesParams
     {
-      this.PublicIds = new List<string>();
-    }
+        public ListSpecificResourcesParams()
+        {
+            PublicIds = new List<string>();
+        }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.PublicIds != null && this.PublicIds.Count > 0)
-      {
-        this.AddParam(paramsDictionary, "public_ids", (IEnumerable<string>) this.PublicIds);
-        if (paramsDictionary.ContainsKey("direction"))
-          paramsDictionary.Remove("direction");
-      }
-      return paramsDictionary;
+        public List<string> PublicIds { get; set; }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (PublicIds != null && PublicIds.Count > 0)
+            {
+                AddParam(paramsDictionary, "public_ids", PublicIds);
+                if (paramsDictionary.ContainsKey("direction"))
+                    paramsDictionary.Remove("direction");
+            }
+            return paramsDictionary;
+        }
     }
-  }
 }

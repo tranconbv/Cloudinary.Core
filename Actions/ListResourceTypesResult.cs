@@ -10,22 +10,21 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class ListResourceTypesResult : BaseResult
-  {
-    [DataMember(Name = "resource_types")]
-    protected string[] m_resourceTypes;
-
-    public ResourceType[] ResourceTypes { get; protected set; }
-
-    internal static ListResourceTypesResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class ListResourceTypesResult : BaseResult
     {
-      ListResourceTypesResult resourceTypesResult = BaseResult.Parse<ListResourceTypesResult>(response);
-      List<ResourceType> resourceTypeList = new List<ResourceType>();
-      foreach (string resourceType in resourceTypesResult.m_resourceTypes)
-        resourceTypeList.Add(Api.ParseCloudinaryParam<ResourceType>(resourceType));
-      resourceTypesResult.ResourceTypes = resourceTypeList.ToArray();
-      return resourceTypesResult;
+        [DataMember(Name = "resource_types")] protected string[] m_resourceTypes;
+
+        public ResourceType[] ResourceTypes { get; protected set; }
+
+        internal static ListResourceTypesResult Parse(HttpWebResponse response)
+        {
+            var resourceTypesResult = Parse<ListResourceTypesResult>(response);
+            var resourceTypeList = new List<ResourceType>();
+            foreach (var resourceType in resourceTypesResult.m_resourceTypes)
+                resourceTypeList.Add(Api.ParseCloudinaryParam<ResourceType>(resourceType));
+            resourceTypesResult.ResourceTypes = resourceTypeList.ToArray();
+            return resourceTypesResult;
+        }
     }
-  }
 }

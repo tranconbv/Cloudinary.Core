@@ -4,44 +4,41 @@
 // MVID: 85795B22-FB3A-4216-BE8E-309002E93AB1
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class UploadMappingResults : BaseResult
-  {
-    public string Message { get; protected set; }
-
-    public Dictionary<string, string> Mappings { get; protected set; }
-
-    public string NextCursor { get; protected set; }
-
-    internal static UploadMappingResults Parse(HttpWebResponse response)
+    [DataContract]
+    public class UploadMappingResults : BaseResult
     {
-      UploadMappingResults uploadMappingResults = BaseResult.Parse<UploadMappingResults>(response);
-      if (uploadMappingResults.Mappings == null)
-        uploadMappingResults.Mappings = new Dictionary<string, string>();
-      if (uploadMappingResults.JsonObj != null)
-      {
-        string str1 = uploadMappingResults.JsonObj.Value<string>((object) "message") ?? string.Empty;
-        uploadMappingResults.Message = str1;
-        JToken jtoken = uploadMappingResults.JsonObj[(object) "mappings"];
-        if (jtoken != null)
+        public string Message { get; protected set; }
+
+        public Dictionary<string, string> Mappings { get; protected set; }
+
+        public string NextCursor { get; protected set; }
+
+        internal static UploadMappingResults Parse(HttpWebResponse response)
         {
-          foreach (JToken child in jtoken.Children())
-            uploadMappingResults.Mappings.Add(child[(object) "folder"].ToString(), child[(object) "template"].ToString());
+            var uploadMappingResults = Parse<UploadMappingResults>(response);
+            if (uploadMappingResults.Mappings == null)
+                uploadMappingResults.Mappings = new Dictionary<string, string>();
+            if (uploadMappingResults.JsonObj != null)
+            {
+                var str1 = uploadMappingResults.JsonObj.Value<string>("message") ?? string.Empty;
+                uploadMappingResults.Message = str1;
+                var jtoken = uploadMappingResults.JsonObj["mappings"];
+                if (jtoken != null)
+                    foreach (var child in jtoken.Children())
+                        uploadMappingResults.Mappings.Add(child["folder"].ToString(), child["template"].ToString());
+                var key = uploadMappingResults.JsonObj.Value<string>("folder") ?? string.Empty;
+                var str2 = uploadMappingResults.JsonObj.Value<string>("template") ?? string.Empty;
+                if (!string.IsNullOrEmpty(key))
+                    uploadMappingResults.Mappings.Add(key, str2);
+                uploadMappingResults.NextCursor = uploadMappingResults.JsonObj.Value<string>("next_cursor") ?? string.Empty;
+            }
+            return uploadMappingResults;
         }
-        string key = uploadMappingResults.JsonObj.Value<string>((object) "folder") ?? string.Empty;
-        string str2 = uploadMappingResults.JsonObj.Value<string>((object) "template") ?? string.Empty;
-        if (!string.IsNullOrEmpty(key))
-          uploadMappingResults.Mappings.Add(key, str2);
-        uploadMappingResults.NextCursor = uploadMappingResults.JsonObj.Value<string>((object) "next_cursor") ?? string.Empty;
-      }
-      return uploadMappingResults;
     }
-  }
 }

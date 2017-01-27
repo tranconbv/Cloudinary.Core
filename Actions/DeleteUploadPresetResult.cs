@@ -9,15 +9,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class DeleteUploadPresetResult : BaseResult
-  {
-    [DataMember(Name = "message")]
-    public string Message { get; protected set; }
-
-    internal static DeleteUploadPresetResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class DeleteUploadPresetResult : BaseResult
     {
-      return BaseResult.Parse<DeleteUploadPresetResult>(response);
+        [DataMember(Name = "message")]
+        public string Message { get; protected set; }
+
+        internal static DeleteUploadPresetResult Parse(HttpWebResponse response)
+        {
+            return Parse<DeleteUploadPresetResult>(response);
+        }
     }
-  }
 }

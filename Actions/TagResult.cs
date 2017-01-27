@@ -9,15 +9,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class TagResult : BaseResult
-  {
-    [DataMember(Name = "public_ids")]
-    public string[] PublicIds { get; protected set; }
-
-    internal static TagResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class TagResult : BaseResult
     {
-      return BaseResult.Parse<TagResult>(response);
+        [DataMember(Name = "public_ids")]
+        public string[] PublicIds { get; protected set; }
+
+        internal static TagResult Parse(HttpWebResponse response)
+        {
+            return Parse<TagResult>(response);
+        }
     }
-  }
 }

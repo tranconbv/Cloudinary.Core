@@ -4,14 +4,14 @@
 // MVID: 85795B22-FB3A-4216-BE8E-309002E93AB1
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ResponsiveBreakpointList
-  {
-    [JsonProperty("breakpoints")]
-    public List<Breakpoint> Breakpoints { get; set; }
-  }
+    public class ResponsiveBreakpointList
+    {
+        [JsonProperty("breakpoints")]
+        public List<Breakpoint> Breakpoints { get; set; }
+    }
 }

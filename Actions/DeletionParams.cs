@@ -9,36 +9,36 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class DeletionParams : BaseParams
-  {
-    public string PublicId { get; set; }
-
-    public string Type { get; set; }
-
-    public bool Invalidate { get; set; }
-
-    public ResourceType ResourceType { get; set; }
-
-    public DeletionParams(string publicId)
+    public class DeletionParams : BaseParams
     {
-      this.Type = "upload";
-      this.ResourceType = ResourceType.Image;
-      this.PublicId = publicId;
-    }
+        public DeletionParams(string publicId)
+        {
+            Type = "upload";
+            ResourceType = ResourceType.Image;
+            PublicId = publicId;
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.PublicId))
-        throw new ArgumentException("PublicId must be specified in UploadParams!");
-    }
+        public string PublicId { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "public_id", this.PublicId);
-      this.AddParam(paramsDictionary, "type", this.Type);
-      this.AddParam(paramsDictionary, "invalidate", this.Invalidate);
-      return paramsDictionary;
+        public string Type { get; set; }
+
+        public bool Invalidate { get; set; }
+
+        public ResourceType ResourceType { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(PublicId))
+                throw new ArgumentException("PublicId must be specified in UploadParams!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "public_id", PublicId);
+            AddParam(paramsDictionary, "type", Type);
+            AddParam(paramsDictionary, "invalidate", Invalidate);
+            return paramsDictionary;
+        }
     }
-  }
 }

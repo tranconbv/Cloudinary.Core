@@ -8,13 +8,13 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class BoundingBox
-  {
-    [DataMember(Name = "tl")]
-    public Point TopLeft { get; protected set; }
+    [DataContract]
+    public class BoundingBox
+    {
+        [DataMember(Name = "tl")]
+        public Point TopLeft { get; protected set; }
 
-    [DataMember(Name = "size")]
-    public Size Size { get; protected set; }
-  }
+        [DataMember(Name = "size")]
+        public Size Size { get; protected set; }
+    }
 }

@@ -9,36 +9,36 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class SpriteParams : BaseParams
-  {
-    public string Tag { get; set; }
-
-    public Transformation Transformation { get; set; }
-
-    public string NotificationUrl { get; set; }
-
-    public bool Async { get; set; }
-
-    public SpriteParams(string tag)
+    public class SpriteParams : BaseParams
     {
-      this.Tag = tag;
-    }
+        public SpriteParams(string tag)
+        {
+            Tag = tag;
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.Tag))
-        throw new ArgumentException("Tag must be set!");
-    }
+        public string Tag { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "tag", this.Tag);
-      this.AddParam(paramsDictionary, "notification_url", this.NotificationUrl);
-      this.AddParam(paramsDictionary, "async", this.Async);
-      if (this.Transformation != null)
-        this.AddParam(paramsDictionary, "transformation", this.Transformation.Generate());
-      return paramsDictionary;
+        public Transformation Transformation { get; set; }
+
+        public string NotificationUrl { get; set; }
+
+        public bool Async { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(Tag))
+                throw new ArgumentException("Tag must be set!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "tag", Tag);
+            AddParam(paramsDictionary, "notification_url", NotificationUrl);
+            AddParam(paramsDictionary, "async", Async);
+            if (Transformation != null)
+                AddParam(paramsDictionary, "transformation", Transformation.Generate());
+            return paramsDictionary;
+        }
     }
-  }
 }

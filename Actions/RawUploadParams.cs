@@ -9,70 +9,70 @@ using System.Text;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class RawUploadParams : BasicRawUploadParams
-  {
-    public string Tags { get; set; }
-
-    public bool? Invalidate { get; set; }
-
-    public Dictionary<string, string> Headers { get; set; }
-
-    public bool? UseFilename { get; set; }
-
-    public bool? UniqueFilename { get; set; }
-
-    public bool? DiscardOriginalFilename { get; set; }
-
-    public string NotificationUrl { get; set; }
-
-    public string Proxy { get; set; }
-
-    public string Folder { get; set; }
-
-    public bool? Overwrite { get; set; }
-
-    public string RawConvert { get; set; }
-
-    public StringDictionary Context { get; set; }
-
-    public string[] AllowedFormats { get; set; }
-
-    public string Moderation { get; set; }
-
-    public RawUploadParams()
+    public class RawUploadParams : BasicRawUploadParams
     {
-      this.Overwrite = new bool?(true);
-      this.UniqueFilename = new bool?(true);
-      this.Context = new StringDictionary();
-    }
+        public RawUploadParams()
+        {
+            Overwrite = true;
+            UniqueFilename = true;
+            Context = new StringDictionary();
+        }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "tags", this.Tags);
-      this.AddParam(paramsDictionary, "use_filename", this.UseFilename);
-      this.AddParam(paramsDictionary, "moderation", this.Moderation);
-      if (this.UseFilename.HasValue && this.UseFilename.Value)
-        this.AddParam(paramsDictionary, "unique_filename", this.UniqueFilename);
-      if (this.AllowedFormats != null)
-        this.AddParam(paramsDictionary, "allowed_formats", string.Join(",", this.AllowedFormats));
-      this.AddParam(paramsDictionary, "invalidate", this.Invalidate);
-      this.AddParam(paramsDictionary, "discard_original_filename", this.DiscardOriginalFilename);
-      this.AddParam(paramsDictionary, "notification_url", this.NotificationUrl);
-      this.AddParam(paramsDictionary, "proxy", this.Proxy);
-      this.AddParam(paramsDictionary, "folder", this.Folder);
-      this.AddParam(paramsDictionary, "raw_convert", this.RawConvert);
-      this.AddParam(paramsDictionary, "overwrite", this.Overwrite);
-      if (this.Context != null && this.Context.Count > 0)
-        this.AddParam(paramsDictionary, "context", string.Join("|", this.Context.Pairs));
-      if (this.Headers != null && this.Headers.Count > 0)
-      {
-        StringBuilder stringBuilder = new StringBuilder();
-        foreach (KeyValuePair<string, string> header in this.Headers)
-          stringBuilder.AppendFormat("{0}: {1}\n", (object) header.Key, (object) header.Value);
-        paramsDictionary.Add("headers", (object) stringBuilder.ToString());
-      }
-      return paramsDictionary;
+        public string Tags { get; set; }
+
+        public bool? Invalidate { get; set; }
+
+        public Dictionary<string, string> Headers { get; set; }
+
+        public bool? UseFilename { get; set; }
+
+        public bool? UniqueFilename { get; set; }
+
+        public bool? DiscardOriginalFilename { get; set; }
+
+        public string NotificationUrl { get; set; }
+
+        public string Proxy { get; set; }
+
+        public string Folder { get; set; }
+
+        public bool? Overwrite { get; set; }
+
+        public string RawConvert { get; set; }
+
+        public StringDictionary Context { get; set; }
+
+        public string[] AllowedFormats { get; set; }
+
+        public string Moderation { get; set; }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "tags", Tags);
+            AddParam(paramsDictionary, "use_filename", UseFilename);
+            AddParam(paramsDictionary, "moderation", Moderation);
+            if (UseFilename.HasValue && UseFilename.Value)
+                AddParam(paramsDictionary, "unique_filename", UniqueFilename);
+            if (AllowedFormats != null)
+                AddParam(paramsDictionary, "allowed_formats", string.Join(",", AllowedFormats));
+            AddParam(paramsDictionary, "invalidate", Invalidate);
+            AddParam(paramsDictionary, "discard_original_filename", DiscardOriginalFilename);
+            AddParam(paramsDictionary, "notification_url", NotificationUrl);
+            AddParam(paramsDictionary, "proxy", Proxy);
+            AddParam(paramsDictionary, "folder", Folder);
+            AddParam(paramsDictionary, "raw_convert", RawConvert);
+            AddParam(paramsDictionary, "overwrite", Overwrite);
+            if (Context != null && Context.Count > 0)
+                AddParam(paramsDictionary, "context", string.Join("|", Context.Pairs));
+            if (Headers != null && Headers.Count > 0)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var header in Headers)
+                    stringBuilder.AppendFormat("{0}: {1}\n", header.Key, header.Value);
+                paramsDictionary.Add("headers", stringBuilder.ToString());
+            }
+            return paramsDictionary;
+        }
     }
-  }
 }

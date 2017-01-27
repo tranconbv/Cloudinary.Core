@@ -9,23 +9,19 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class RestoreResult : BaseResult
-  {
-    [DataMember(Name = "resource_type")]
-    protected string m_resourceType;
-
-    public ResourceType ResourceType
+    [DataContract]
+    public class RestoreResult : BaseResult
     {
-      get
-      {
-        return Api.ParseCloudinaryParam<ResourceType>(this.m_resourceType);
-      }
-    }
+        [DataMember(Name = "resource_type")] protected string m_resourceType;
 
-    internal static RestoreResult Parse(HttpWebResponse response)
-    {
-      return BaseResult.Parse<RestoreResult>(response);
+        public ResourceType ResourceType
+        {
+            get { return Api.ParseCloudinaryParam<ResourceType>(m_resourceType); }
+        }
+
+        internal static RestoreResult Parse(HttpWebResponse response)
+        {
+            return Parse<RestoreResult>(response);
+        }
     }
-  }
 }

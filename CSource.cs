@@ -6,21 +6,21 @@
 
 namespace CloudinaryDotNet
 {
-  internal class CSource
-  {
-    public string Source;
-    public string SourceToSign;
-
-    public CSource(string source)
+    internal class CSource
     {
-      this.SourceToSign = this.Source = source;
-    }
+        public string Source;
+        public string SourceToSign;
 
-    public static CSource operator +(CSource src, string value)
-    {
-      src.Source += value;
-      src.SourceToSign += value;
-      return src;
+        public CSource(string source)
+        {
+            SourceToSign = Source = source;
+        }
+
+        public static CSource operator +(CSource src, string value)
+        {
+            src.Source += value;
+            src.SourceToSign += value;
+            return src;
+        }
     }
-  }
 }

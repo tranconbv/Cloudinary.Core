@@ -8,10 +8,10 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Info
-  {
-    [DataMember(Name = "detection")]
-    public Detection Detection { get; protected set; }
-  }
+    [DataContract]
+    public class Info
+    {
+        [DataMember(Name = "detection")]
+        public Detection Detection { get; protected set; }
+    }
 }

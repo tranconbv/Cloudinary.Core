@@ -8,39 +8,35 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class TransformDerived
-  {
-    [DataMember(Name = "resource_type")]
-    public string m_resourceType;
-
-    [DataMember(Name = "public_id")]
-    public string PublicId { get; protected set; }
-
-    public ResourceType ResourceType
+    [DataContract]
+    public class TransformDerived
     {
-      get
-      {
-        return Api.ParseCloudinaryParam<ResourceType>(this.m_resourceType);
-      }
+        [DataMember(Name = "resource_type")] public string m_resourceType;
+
+        [DataMember(Name = "public_id")]
+        public string PublicId { get; protected set; }
+
+        public ResourceType ResourceType
+        {
+            get { return Api.ParseCloudinaryParam<ResourceType>(m_resourceType); }
+        }
+
+        [DataMember(Name = "type")]
+        public string Type { get; protected set; }
+
+        [DataMember(Name = "format")]
+        public string Format { get; protected set; }
+
+        [DataMember(Name = "url")]
+        public string Url { get; protected set; }
+
+        [DataMember(Name = "secure_url")]
+        public string SecureUrl { get; protected set; }
+
+        [DataMember(Name = "bytes")]
+        public long Length { get; protected set; }
+
+        [DataMember(Name = "id")]
+        public string Id { get; protected set; }
     }
-
-    [DataMember(Name = "type")]
-    public string Type { get; protected set; }
-
-    [DataMember(Name = "format")]
-    public string Format { get; protected set; }
-
-    [DataMember(Name = "url")]
-    public string Url { get; protected set; }
-
-    [DataMember(Name = "secure_url")]
-    public string SecureUrl { get; protected set; }
-
-    [DataMember(Name = "bytes")]
-    public long Length { get; protected set; }
-
-    [DataMember(Name = "id")]
-    public string Id { get; protected set; }
-  }
 }

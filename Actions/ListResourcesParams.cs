@@ -9,43 +9,43 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class ListResourcesParams : BaseParams
-  {
-    public ResourceType ResourceType { get; set; }
-
-    public string Type { get; set; }
-
-    public int MaxResults { get; set; }
-
-    public bool Tags { get; set; }
-
-    public bool Moderations { get; set; }
-
-    public bool Context { get; set; }
-
-    public string NextCursor { get; set; }
-
-    public string Direction { get; set; }
-
-    public DateTime StartAt { get; set; }
-
-    public override void Check()
+    public class ListResourcesParams : BaseParams
     {
-    }
+        public ResourceType ResourceType { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.MaxResults > 0)
-        this.AddParam(paramsDictionary, "max_results", this.MaxResults.ToString());
-      this.AddParam(paramsDictionary, "start_at", this.StartAt);
-      this.AddParam(paramsDictionary, "next_cursor", this.NextCursor);
-      this.AddParam(paramsDictionary, "tags", this.Tags);
-      this.AddParam(paramsDictionary, "moderations", this.Moderations);
-      this.AddParam(paramsDictionary, "context", this.Context);
-      this.AddParam(paramsDictionary, "direction", this.Direction);
-      this.AddParam(paramsDictionary, "type", this.Type);
-      return paramsDictionary;
+        public string Type { get; set; }
+
+        public int MaxResults { get; set; }
+
+        public bool Tags { get; set; }
+
+        public bool Moderations { get; set; }
+
+        public bool Context { get; set; }
+
+        public string NextCursor { get; set; }
+
+        public string Direction { get; set; }
+
+        public DateTime StartAt { get; set; }
+
+        public override void Check()
+        {
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (MaxResults > 0)
+                AddParam(paramsDictionary, "max_results", MaxResults.ToString());
+            AddParam(paramsDictionary, "start_at", StartAt);
+            AddParam(paramsDictionary, "next_cursor", NextCursor);
+            AddParam(paramsDictionary, "tags", Tags);
+            AddParam(paramsDictionary, "moderations", Moderations);
+            AddParam(paramsDictionary, "context", Context);
+            AddParam(paramsDictionary, "direction", Direction);
+            AddParam(paramsDictionary, "type", Type);
+            return paramsDictionary;
+        }
     }
-  }
 }

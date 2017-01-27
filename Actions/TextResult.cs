@@ -9,18 +9,18 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class TextResult : BaseResult
-  {
-    [DataMember(Name = "width")]
-    public int Width { get; protected set; }
-
-    [DataMember(Name = "height")]
-    public int Height { get; protected set; }
-
-    internal static TextResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class TextResult : BaseResult
     {
-      return BaseResult.Parse<TextResult>(response);
+        [DataMember(Name = "width")]
+        public int Width { get; protected set; }
+
+        [DataMember(Name = "height")]
+        public int Height { get; protected set; }
+
+        internal static TextResult Parse(HttpWebResponse response)
+        {
+            return Parse<TextResult>(response);
+        }
     }
-  }
 }

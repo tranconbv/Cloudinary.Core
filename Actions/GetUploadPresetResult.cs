@@ -9,21 +9,21 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class GetUploadPresetResult : BaseResult
-  {
-    [DataMember(Name = "name")]
-    public string Name { get; protected set; }
-
-    [DataMember(Name = "unsigned")]
-    public bool Unsigned { get; protected set; }
-
-    [DataMember(Name = "settings")]
-    public UploadSettings Settings { get; protected set; }
-
-    internal static GetUploadPresetResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class GetUploadPresetResult : BaseResult
     {
-      return BaseResult.Parse<GetUploadPresetResult>(response);
+        [DataMember(Name = "name")]
+        public string Name { get; protected set; }
+
+        [DataMember(Name = "unsigned")]
+        public bool Unsigned { get; protected set; }
+
+        [DataMember(Name = "settings")]
+        public UploadSettings Settings { get; protected set; }
+
+        internal static GetUploadPresetResult Parse(HttpWebResponse response)
+        {
+            return Parse<GetUploadPresetResult>(response);
+        }
     }
-  }
 }

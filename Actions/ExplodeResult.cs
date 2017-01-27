@@ -9,18 +9,18 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class ExplodeResult : BaseResult
-  {
-    [DataMember(Name = "status")]
-    public string Status { get; protected set; }
-
-    [DataMember(Name = "batch_id")]
-    public string BatchId { get; protected set; }
-
-    internal static ExplodeResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class ExplodeResult : BaseResult
     {
-      return BaseResult.Parse<ExplodeResult>(response);
+        [DataMember(Name = "status")]
+        public string Status { get; protected set; }
+
+        [DataMember(Name = "batch_id")]
+        public string BatchId { get; protected set; }
+
+        internal static ExplodeResult Parse(HttpWebResponse response)
+        {
+            return Parse<ExplodeResult>(response);
+        }
     }
-  }
 }

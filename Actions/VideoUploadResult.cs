@@ -9,36 +9,36 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class VideoUploadResult : RawUploadResult
-  {
-    [DataMember(Name = "width")]
-    public int Width { get; protected set; }
-
-    [DataMember(Name = "height")]
-    public int Height { get; protected set; }
-
-    [DataMember(Name = "format")]
-    public string Format { get; protected set; }
-
-    [DataMember(Name = "video")]
-    public Video Video { get; protected set; }
-
-    [DataMember(Name = "audio")]
-    public Audio Audio { get; protected set; }
-
-    [DataMember(Name = "frame_rate")]
-    public double FrameRate { get; protected set; }
-
-    [DataMember(Name = "bit_rate")]
-    public int BitRate { get; protected set; }
-
-    [DataMember(Name = "duration")]
-    public double Duration { get; protected set; }
-
-    internal static VideoUploadResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class VideoUploadResult : RawUploadResult
     {
-      return BaseResult.Parse<VideoUploadResult>(response);
+        [DataMember(Name = "width")]
+        public int Width { get; protected set; }
+
+        [DataMember(Name = "height")]
+        public int Height { get; protected set; }
+
+        [DataMember(Name = "format")]
+        public string Format { get; protected set; }
+
+        [DataMember(Name = "video")]
+        public Video Video { get; protected set; }
+
+        [DataMember(Name = "audio")]
+        public Audio Audio { get; protected set; }
+
+        [DataMember(Name = "frame_rate")]
+        public double FrameRate { get; protected set; }
+
+        [DataMember(Name = "bit_rate")]
+        public int BitRate { get; protected set; }
+
+        [DataMember(Name = "duration")]
+        public double Duration { get; protected set; }
+
+        internal static VideoUploadResult Parse(HttpWebResponse response)
+        {
+            return Parse<VideoUploadResult>(response);
+        }
     }
-  }
 }

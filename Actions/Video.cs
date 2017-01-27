@@ -8,19 +8,19 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Video
-  {
-    [DataMember(Name = "pix_format")]
-    public string Format { get; protected set; }
+    [DataContract]
+    public class Video
+    {
+        [DataMember(Name = "pix_format")]
+        public string Format { get; protected set; }
 
-    [DataMember(Name = "codec")]
-    public string Codec { get; protected set; }
+        [DataMember(Name = "codec")]
+        public string Codec { get; protected set; }
 
-    [DataMember(Name = "level")]
-    public int? Level { get; protected set; }
+        [DataMember(Name = "level")]
+        public int? Level { get; protected set; }
 
-    [DataMember(Name = "bit_rate")]
-    public int? BitRate { get; protected set; }
-  }
+        [DataMember(Name = "bit_rate")]
+        public int? BitRate { get; protected set; }
+    }
 }

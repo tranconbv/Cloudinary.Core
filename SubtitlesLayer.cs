@@ -6,11 +6,11 @@
 
 namespace CloudinaryDotNet
 {
-  public class SubtitlesLayer : TextLayer
-  {
-    public SubtitlesLayer()
+    public class SubtitlesLayer : TextLayer
     {
-      this.m_resourceType = "subtitles";
+        public SubtitlesLayer()
+        {
+            m_resourceType = "subtitles";
+        }
     }
-  }
 }

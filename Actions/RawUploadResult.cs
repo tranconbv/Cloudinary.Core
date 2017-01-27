@@ -11,30 +11,30 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class RawUploadResult : UploadResult
-  {
-    [DataMember(Name = "signature")]
-    public string Signature { get; protected set; }
-
-    [DataMember(Name = "resource_type")]
-    public string ResourceType { get; protected set; }
-
-    [DataMember(Name = "bytes")]
-    public long Length { get; protected set; }
-
-    [DataMember(Name = "moderation")]
-    public List<CloudinaryDotNet.Actions.Moderation> Moderation { get; protected set; }
-
-    [DataMember(Name = "created_at")]
-    public DateTime CreatedAt { get; protected set; }
-
-    [DataMember(Name = "tags")]
-    public string[] Tags { get; protected set; }
-
-    internal static RawUploadResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class RawUploadResult : UploadResult
     {
-      return BaseResult.Parse<RawUploadResult>(response);
+        [DataMember(Name = "signature")]
+        public string Signature { get; protected set; }
+
+        [DataMember(Name = "resource_type")]
+        public string ResourceType { get; protected set; }
+
+        [DataMember(Name = "bytes")]
+        public long Length { get; protected set; }
+
+        [DataMember(Name = "moderation")]
+        public List<Moderation> Moderation { get; protected set; }
+
+        [DataMember(Name = "created_at")]
+        public DateTime CreatedAt { get; protected set; }
+
+        [DataMember(Name = "tags")]
+        public string[] Tags { get; protected set; }
+
+        internal static RawUploadResult Parse(HttpWebResponse response)
+        {
+            return Parse<RawUploadResult>(response);
+        }
     }
-  }
 }

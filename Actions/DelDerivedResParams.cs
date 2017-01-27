@@ -9,29 +9,29 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class DelDerivedResParams : BaseParams
-  {
-    public List<string> DerivedResources { get; set; }
-
-    public DelDerivedResParams()
+    public class DelDerivedResParams : BaseParams
     {
-      this.DerivedResources = new List<string>();
-    }
+        public DelDerivedResParams()
+        {
+            DerivedResources = new List<string>();
+        }
 
-    public override void Check()
-    {
-      if (this.DerivedResources == null)
-        throw new ArgumentException("DerivedResources can't be null!");
-      if (this.DerivedResources.Count == 0)
-        throw new ArgumentException("At least one derived resource must be specified!");
-    }
+        public List<string> DerivedResources { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      if (this.DerivedResources != null && this.DerivedResources.Count > 0)
-        paramsDictionary.Add("derived_resource_ids", (object) this.DerivedResources);
-      return paramsDictionary;
+        public override void Check()
+        {
+            if (DerivedResources == null)
+                throw new ArgumentException("DerivedResources can't be null!");
+            if (DerivedResources.Count == 0)
+                throw new ArgumentException("At least one derived resource must be specified!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            if (DerivedResources != null && DerivedResources.Count > 0)
+                paramsDictionary.Add("derived_resource_ids", DerivedResources);
+            return paramsDictionary;
+        }
     }
-  }
 }

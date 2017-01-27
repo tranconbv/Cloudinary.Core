@@ -9,13 +9,13 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Eager
-  {
-    [DataMember(Name = "url")]
-    public Uri Uri { get; protected set; }
+    [DataContract]
+    public class Eager
+    {
+        [DataMember(Name = "url")]
+        public Uri Uri { get; protected set; }
 
-    [DataMember(Name = "secure_url")]
-    public Uri SecureUri { get; protected set; }
-  }
+        [DataMember(Name = "secure_url")]
+        public Uri SecureUri { get; protected set; }
+    }
 }

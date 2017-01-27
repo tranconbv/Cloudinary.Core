@@ -10,12 +10,12 @@ using System.Linq;
 
 namespace CloudinaryDotNet.Actions
 {
-  [Obsolete("One could use List<Rectangle>")]
-  public class FaceCoordinates : List<Rectangle>
-  {
-    public override string ToString()
+    [Obsolete("One could use List<Rectangle>")]
+    public class FaceCoordinates : List<Rectangle>
     {
-      return string.Join("|", this.Select<Rectangle, string>((Func<Rectangle, string>) (r => string.Format("{0},{1},{2},{3}", (object) r.X, (object) r.Y, (object) r.Width, (object) r.Height))).ToArray<string>());
+        public override string ToString()
+        {
+            return string.Join("|", this.Select(r => string.Format("{0},{1},{2},{3}", (object) r.X, (object) r.Y, (object) r.Width, (object) r.Height)).ToArray());
+        }
     }
-  }
 }

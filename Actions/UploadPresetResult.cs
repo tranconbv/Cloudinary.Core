@@ -9,18 +9,18 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class UploadPresetResult : BaseResult
-  {
-    [DataMember(Name = "message")]
-    public string Message { get; protected set; }
-
-    [DataMember(Name = "name")]
-    public string Name { get; protected set; }
-
-    internal static UploadPresetResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class UploadPresetResult : BaseResult
     {
-      return BaseResult.Parse<UploadPresetResult>(response);
+        [DataMember(Name = "message")]
+        public string Message { get; protected set; }
+
+        [DataMember(Name = "name")]
+        public string Name { get; protected set; }
+
+        internal static UploadPresetResult Parse(HttpWebResponse response)
+        {
+            return Parse<UploadPresetResult>(response);
+        }
     }
-  }
 }

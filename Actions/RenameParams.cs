@@ -9,41 +9,41 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class RenameParams : BaseParams
-  {
-    public string FromPublicId { get; set; }
-
-    public string ToPublicId { get; set; }
-
-    public string Type { get; set; }
-
-    public bool Overwrite { get; set; }
-
-    public bool Invalidate { get; set; }
-
-    public RenameParams(string fromPublicId, string toPublicId)
+    public class RenameParams : BaseParams
     {
-      this.FromPublicId = fromPublicId;
-      this.ToPublicId = toPublicId;
-    }
+        public RenameParams(string fromPublicId, string toPublicId)
+        {
+            FromPublicId = fromPublicId;
+            ToPublicId = toPublicId;
+        }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "from_public_id", this.FromPublicId);
-      this.AddParam(paramsDictionary, "to_public_id", this.ToPublicId);
-      this.AddParam(paramsDictionary, "overwrite", this.Overwrite);
-      this.AddParam(paramsDictionary, "type", this.Type);
-      this.AddParam(paramsDictionary, "invalidate", this.Invalidate);
-      return paramsDictionary;
-    }
+        public string FromPublicId { get; set; }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.FromPublicId))
-        throw new ArgumentException("FromPublicId can't be null!");
-      if (string.IsNullOrEmpty(this.ToPublicId))
-        throw new ArgumentException("ToPublicId can't be null!");
+        public string ToPublicId { get; set; }
+
+        public string Type { get; set; }
+
+        public bool Overwrite { get; set; }
+
+        public bool Invalidate { get; set; }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "from_public_id", FromPublicId);
+            AddParam(paramsDictionary, "to_public_id", ToPublicId);
+            AddParam(paramsDictionary, "overwrite", Overwrite);
+            AddParam(paramsDictionary, "type", Type);
+            AddParam(paramsDictionary, "invalidate", Invalidate);
+            return paramsDictionary;
+        }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(FromPublicId))
+                throw new ArgumentException("FromPublicId can't be null!");
+            if (string.IsNullOrEmpty(ToPublicId))
+                throw new ArgumentException("ToPublicId can't be null!");
+        }
     }
-  }
 }

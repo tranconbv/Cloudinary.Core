@@ -8,9 +8,9 @@ using System.ComponentModel;
 
 namespace CloudinaryDotNet.Actions
 {
-  public enum ArchiveCallMode
-  {
-    [Description("download")] Download,
-    [Description("create")] Create,
-  }
+    public enum ArchiveCallMode
+    {
+        [Description("download")] Download,
+        [Description("create")] Create
+    }
 }

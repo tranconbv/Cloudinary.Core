@@ -6,7 +6,7 @@
 
 namespace CloudinaryDotNet
 {
-  public abstract class BaseLayer
-  {
-  }
+    public abstract class BaseLayer
+    {
+    }
 }

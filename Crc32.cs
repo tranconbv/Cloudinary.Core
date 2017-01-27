@@ -8,42 +8,40 @@ using System;
 
 namespace CloudinaryDotNet
 {
-  public static class Crc32
-  {
-    private static uint[] table;
-
-    static Crc32()
+    public static class Crc32
     {
-      uint num1 = 3988292384;
-      Crc32.table = new uint[256];
-      for (uint index1 = 0; (long) index1 < (long) Crc32.table.Length; ++index1)
-      {
-        uint num2 = index1;
-        for (int index2 = 8; index2 > 0; --index2)
+        private static readonly uint[] table;
+
+        static Crc32()
         {
-          if (((int) num2 & 1) == 1)
-            num2 = num2 >> 1 ^ num1;
-          else
-            num2 >>= 1;
+            var num1 = 3988292384;
+            table = new uint[256];
+            for (uint index1 = 0; (long) index1 < (long) table.Length; ++index1)
+            {
+                var num2 = index1;
+                for (var index2 = 8; index2 > 0; --index2)
+                    if (((int) num2 & 1) == 1)
+                        num2 = (num2 >> 1) ^ num1;
+                    else
+                        num2 >>= 1;
+                table[index1] = num2;
+            }
         }
-        Crc32.table[index1] = num2;
-      }
-    }
 
-    public static uint ComputeChecksum(byte[] bytes)
-    {
-      uint num1 = uint.MaxValue;
-      for (int index = 0; index < bytes.Length; ++index)
-      {
-        byte num2 = (byte) (num1 & (uint) byte.MaxValue ^ (uint) bytes[index]);
-        num1 = num1 >> 8 ^ Crc32.table[(int) num2];
-      }
-      return ~num1;
-    }
+        public static uint ComputeChecksum(byte[] bytes)
+        {
+            var num1 = uint.MaxValue;
+            for (var index = 0; index < bytes.Length; ++index)
+            {
+                var num2 = (byte) ((num1 & byte.MaxValue) ^ bytes[index]);
+                num1 = (num1 >> 8) ^ table[num2];
+            }
+            return ~num1;
+        }
 
-    public static byte[] ComputeChecksumBytes(byte[] bytes)
-    {
-      return BitConverter.GetBytes(Crc32.ComputeChecksum(bytes));
+        public static byte[] ComputeChecksumBytes(byte[] bytes)
+        {
+            return BitConverter.GetBytes(ComputeChecksum(bytes));
+        }
     }
-  }
 }

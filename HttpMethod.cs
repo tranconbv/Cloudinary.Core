@@ -6,11 +6,11 @@
 
 namespace CloudinaryDotNet
 {
-  public enum HttpMethod
-  {
-    DELETE,
-    GET,
-    POST,
-    PUT,
-  }
+    public enum HttpMethod
+    {
+        DELETE,
+        GET,
+        POST,
+        PUT
+    }
 }

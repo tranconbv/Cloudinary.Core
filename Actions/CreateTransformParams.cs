@@ -9,25 +9,25 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class CreateTransformParams : BaseParams
-  {
-    public string Name { get; set; }
-
-    public Transformation Transform { get; set; }
-
-    public override void Check()
+    public class CreateTransformParams : BaseParams
     {
-      if (string.IsNullOrEmpty(this.Name))
-        throw new ArgumentException("Name must be set!");
-      if (this.Transform == null)
-        throw new ArgumentException("Transform must be defined!");
-    }
+        public string Name { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      paramsDictionary.Add("transformation", (object) this.Transform.Generate());
-      return paramsDictionary;
+        public Transformation Transform { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(Name))
+                throw new ArgumentException("Name must be set!");
+            if (Transform == null)
+                throw new ArgumentException("Transform must be defined!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            paramsDictionary.Add("transformation", Transform.Generate());
+            return paramsDictionary;
+        }
     }
-  }
 }

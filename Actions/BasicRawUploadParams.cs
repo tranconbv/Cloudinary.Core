@@ -9,42 +9,39 @@ using System.Collections.Generic;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class BasicRawUploadParams : BaseParams
-  {
-    public FileDescription File { get; set; }
-
-    public string PublicId { get; set; }
-
-    public bool? Backup { get; set; }
-
-    public string Type { get; set; }
-
-    public virtual ResourceType ResourceType
+    public class BasicRawUploadParams : BaseParams
     {
-      get
-      {
-        return ResourceType.Raw;
-      }
-    }
+        public FileDescription File { get; set; }
 
-    public override void Check()
-    {
-      if (this.File == null)
-        throw new ArgumentException("File must be specified in UploadParams!");
-      if (!this.File.IsRemote && this.File.Stream == null && string.IsNullOrEmpty(this.File.FilePath))
-        throw new ArgumentException("File is not ready!");
-      if (string.IsNullOrEmpty(this.File.FileName))
-        throw new ArgumentException("File name must be specified in UploadParams!");
-    }
+        public string PublicId { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "public_id", this.PublicId);
-      this.AddParam(paramsDictionary, "type", this.Type);
-      if (this.Backup.HasValue)
-        this.AddParam(paramsDictionary, "backup", this.Backup.Value);
-      return paramsDictionary;
+        public bool? Backup { get; set; }
+
+        public string Type { get; set; }
+
+        public virtual ResourceType ResourceType
+        {
+            get { return ResourceType.Raw; }
+        }
+
+        public override void Check()
+        {
+            if (File == null)
+                throw new ArgumentException("File must be specified in UploadParams!");
+            if (!File.IsRemote && File.Stream == null && string.IsNullOrEmpty(File.FilePath))
+                throw new ArgumentException("File is not ready!");
+            if (string.IsNullOrEmpty(File.FileName))
+                throw new ArgumentException("File name must be specified in UploadParams!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "public_id", PublicId);
+            AddParam(paramsDictionary, "type", Type);
+            if (Backup.HasValue)
+                AddParam(paramsDictionary, "backup", Backup.Value);
+            return paramsDictionary;
+        }
     }
-  }
 }

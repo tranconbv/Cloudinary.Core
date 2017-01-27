@@ -9,15 +9,15 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class TransformResult : BaseResult
-  {
-    [DataMember(Name = "message")]
-    public string Message { get; protected set; }
-
-    internal static TransformResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class TransformResult : BaseResult
     {
-      return BaseResult.Parse<TransformResult>(response);
+        [DataMember(Name = "message")]
+        public string Message { get; protected set; }
+
+        internal static TransformResult Parse(HttpWebResponse response)
+        {
+            return Parse<TransformResult>(response);
+        }
     }
-  }
 }

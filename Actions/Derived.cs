@@ -8,25 +8,25 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Derived
-  {
-    [DataMember(Name = "transformation")]
-    public string Transformation { get; protected set; }
+    [DataContract]
+    public class Derived
+    {
+        [DataMember(Name = "transformation")]
+        public string Transformation { get; protected set; }
 
-    [DataMember(Name = "format")]
-    public string Format { get; protected set; }
+        [DataMember(Name = "format")]
+        public string Format { get; protected set; }
 
-    [DataMember(Name = "bytes")]
-    public long Length { get; protected set; }
+        [DataMember(Name = "bytes")]
+        public long Length { get; protected set; }
 
-    [DataMember(Name = "id")]
-    public string Id { get; protected set; }
+        [DataMember(Name = "id")]
+        public string Id { get; protected set; }
 
-    [DataMember(Name = "url")]
-    public string Url { get; protected set; }
+        [DataMember(Name = "url")]
+        public string Url { get; protected set; }
 
-    [DataMember(Name = "secure_url")]
-    public string SecureUrl { get; protected set; }
-  }
+        [DataMember(Name = "secure_url")]
+        public string SecureUrl { get; protected set; }
+    }
 }

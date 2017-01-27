@@ -8,16 +8,16 @@ using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class Usage
-  {
-    [DataMember(Name = "usage")]
-    public long Used { get; protected set; }
+    [DataContract]
+    public class Usage
+    {
+        [DataMember(Name = "usage")]
+        public long Used { get; protected set; }
 
-    [DataMember(Name = "limit")]
-    public long Limit { get; protected set; }
+        [DataMember(Name = "limit")]
+        public long Limit { get; protected set; }
 
-    [DataMember(Name = "used_percent")]
-    public float UsedPercent { get; protected set; }
-  }
+        [DataMember(Name = "used_percent")]
+        public float UsedPercent { get; protected set; }
+    }
 }

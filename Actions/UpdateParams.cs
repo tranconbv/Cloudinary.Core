@@ -10,80 +10,80 @@ using System.Text;
 
 namespace CloudinaryDotNet.Actions
 {
-  public class UpdateParams : BaseParams
-  {
-    public string PublicId { get; set; }
-
-    public ResourceType ResourceType { get; set; }
-
-    public string Type { get; set; }
-
-    public Dictionary<string, string> Headers { get; set; }
-
-    public string Tags { get; set; }
-
-    public StringDictionary Context { get; set; }
-
-    public string RawConvert { get; set; }
-
-    public object FaceCoordinates { get; set; }
-
-    public object CustomCoordinates { get; set; }
-
-    public string Categorization { get; set; }
-
-    public string BackgroundRemoval { get; set; }
-
-    public float? AutoTagging { get; set; }
-
-    public string Detection { get; set; }
-
-    public string SimilaritySearch { get; set; }
-
-    public string Ocr { get; set; }
-
-    public ModerationStatus ModerationStatus { get; set; }
-
-    public UpdateParams(string publicId)
+    public class UpdateParams : BaseParams
     {
-      this.PublicId = publicId;
-      this.Type = "upload";
-    }
+        public UpdateParams(string publicId)
+        {
+            PublicId = publicId;
+            Type = "upload";
+        }
 
-    public override void Check()
-    {
-      if (string.IsNullOrEmpty(this.PublicId))
-        throw new ArgumentException("PublicId must be set!");
-    }
+        public string PublicId { get; set; }
 
-    public override SortedDictionary<string, object> ToParamsDictionary()
-    {
-      SortedDictionary<string, object> paramsDictionary = base.ToParamsDictionary();
-      this.AddParam(paramsDictionary, "public_id", this.PublicId);
-      this.AddParam(paramsDictionary, "tags", this.Tags);
-      this.AddParam(paramsDictionary, "type", this.Type);
-      this.AddParam(paramsDictionary, "categorization", this.Categorization);
-      this.AddParam(paramsDictionary, "detection", this.Detection);
-      this.AddParam(paramsDictionary, "ocr", this.Ocr);
-      this.AddParam(paramsDictionary, "similarity_search", this.SimilaritySearch);
-      this.AddParam(paramsDictionary, "background_removal", this.BackgroundRemoval);
-      if (this.ModerationStatus != ModerationStatus.Pending)
-        this.AddParam(paramsDictionary, "moderation_status", Api.GetCloudinaryParam<ModerationStatus>(this.ModerationStatus));
-      if (this.AutoTagging.HasValue)
-        this.AddParam(paramsDictionary, "auto_tagging", this.AutoTagging.Value);
-      this.AddParam(paramsDictionary, "raw_convert", this.RawConvert);
-      if (this.Context != null && this.Context.Count > 0)
-        this.AddParam(paramsDictionary, "context", string.Join("|", this.Context.Pairs));
-      this.AddCoordinates(paramsDictionary, "face_coordinates", this.FaceCoordinates);
-      this.AddCoordinates(paramsDictionary, "custom_coordinates", this.CustomCoordinates);
-      if (this.Headers != null && this.Headers.Count > 0)
-      {
-        StringBuilder stringBuilder = new StringBuilder();
-        foreach (KeyValuePair<string, string> header in this.Headers)
-          stringBuilder.AppendFormat("{0}: {1}\n", (object) header.Key, (object) header.Value);
-        paramsDictionary.Add("headers", (object) stringBuilder.ToString());
-      }
-      return paramsDictionary;
+        public ResourceType ResourceType { get; set; }
+
+        public string Type { get; set; }
+
+        public Dictionary<string, string> Headers { get; set; }
+
+        public string Tags { get; set; }
+
+        public StringDictionary Context { get; set; }
+
+        public string RawConvert { get; set; }
+
+        public object FaceCoordinates { get; set; }
+
+        public object CustomCoordinates { get; set; }
+
+        public string Categorization { get; set; }
+
+        public string BackgroundRemoval { get; set; }
+
+        public float? AutoTagging { get; set; }
+
+        public string Detection { get; set; }
+
+        public string SimilaritySearch { get; set; }
+
+        public string Ocr { get; set; }
+
+        public ModerationStatus ModerationStatus { get; set; }
+
+        public override void Check()
+        {
+            if (string.IsNullOrEmpty(PublicId))
+                throw new ArgumentException("PublicId must be set!");
+        }
+
+        public override SortedDictionary<string, object> ToParamsDictionary()
+        {
+            var paramsDictionary = base.ToParamsDictionary();
+            AddParam(paramsDictionary, "public_id", PublicId);
+            AddParam(paramsDictionary, "tags", Tags);
+            AddParam(paramsDictionary, "type", Type);
+            AddParam(paramsDictionary, "categorization", Categorization);
+            AddParam(paramsDictionary, "detection", Detection);
+            AddParam(paramsDictionary, "ocr", Ocr);
+            AddParam(paramsDictionary, "similarity_search", SimilaritySearch);
+            AddParam(paramsDictionary, "background_removal", BackgroundRemoval);
+            if (ModerationStatus != ModerationStatus.Pending)
+                AddParam(paramsDictionary, "moderation_status", Api.GetCloudinaryParam(ModerationStatus));
+            if (AutoTagging.HasValue)
+                AddParam(paramsDictionary, "auto_tagging", AutoTagging.Value);
+            AddParam(paramsDictionary, "raw_convert", RawConvert);
+            if (Context != null && Context.Count > 0)
+                AddParam(paramsDictionary, "context", string.Join("|", Context.Pairs));
+            AddCoordinates(paramsDictionary, "face_coordinates", FaceCoordinates);
+            AddCoordinates(paramsDictionary, "custom_coordinates", CustomCoordinates);
+            if (Headers != null && Headers.Count > 0)
+            {
+                var stringBuilder = new StringBuilder();
+                foreach (var header in Headers)
+                    stringBuilder.AppendFormat("{0}: {1}\n", header.Key, header.Value);
+                paramsDictionary.Add("headers", stringBuilder.ToString());
+            }
+            return paramsDictionary;
+        }
     }
-  }
 }

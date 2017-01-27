@@ -4,37 +4,36 @@
 // MVID: 85795B22-FB3A-4216-BE8E-309002E93AB1
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Runtime.Serialization;
 
 namespace CloudinaryDotNet.Actions
 {
-  [DataContract]
-  public class ExplicitResult : RawUploadResult
-  {
-    [DataMember(Name = "format")]
-    public string Format { get; protected set; }
-
-    [DataMember(Name = "type")]
-    public string Type { get; protected set; }
-
-    [DataMember(Name = "eager")]
-    public CloudinaryDotNet.Actions.Eager[] Eager { get; protected set; }
-
-    public List<ResponsiveBreakpointList> ResponsiveBreakpoints { get; set; }
-
-    internal static ExplicitResult Parse(HttpWebResponse response)
+    [DataContract]
+    public class ExplicitResult : RawUploadResult
     {
-      ExplicitResult explicitResult = BaseResult.Parse<ExplicitResult>(response);
-      if (explicitResult.JsonObj != null)
-      {
-        JToken jtoken = explicitResult.JsonObj[(object) "responsive_breakpoints"];
-        if (jtoken != null)
-          explicitResult.ResponsiveBreakpoints = jtoken.ToObject<List<ResponsiveBreakpointList>>();
-      }
-      return explicitResult;
+        [DataMember(Name = "format")]
+        public string Format { get; protected set; }
+
+        [DataMember(Name = "type")]
+        public string Type { get; protected set; }
+
+        [DataMember(Name = "eager")]
+        public Eager[] Eager { get; protected set; }
+
+        public List<ResponsiveBreakpointList> ResponsiveBreakpoints { get; set; }
+
+        internal static ExplicitResult Parse(HttpWebResponse response)
+        {
+            var explicitResult = Parse<ExplicitResult>(response);
+            if (explicitResult.JsonObj != null)
+            {
+                var jtoken = explicitResult.JsonObj["responsive_breakpoints"];
+                if (jtoken != null)
+                    explicitResult.ResponsiveBreakpoints = jtoken.ToObject<List<ResponsiveBreakpointList>>();
+            }
+            return explicitResult;
+        }
     }
-  }
 }

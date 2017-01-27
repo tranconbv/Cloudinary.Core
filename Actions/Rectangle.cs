@@ -2,7 +2,6 @@ namespace CloudinaryDotNet.Actions
 {
     public struct Rectangle
     {
-
         public Rectangle(int x, int y, int width, int height) : this()
         {
             X = x;

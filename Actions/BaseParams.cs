@@ -11,78 +11,80 @@ using System.Linq;
 
 namespace CloudinaryDotNet.Actions
 {
-  public abstract class BaseParams
-  {
-    private SortedDictionary<string, object> CustomParams = new SortedDictionary<string, object>();
-
-    public abstract void Check();
-
-    public virtual SortedDictionary<string, object> ToParamsDictionary()
+    public abstract class BaseParams
     {
-      return new SortedDictionary<string, object>((IDictionary<string, object>) this.CustomParams);
-    }
+        private readonly SortedDictionary<string, object> CustomParams = new SortedDictionary<string, object>();
 
-    public void AddCustomParam(string key, string value)
-    {
-      if (string.IsNullOrEmpty(value))
-        return;
-      this.CustomParams.Add(key, (object) value);
-    }
+        public abstract void Check();
 
-    protected void AddParam(SortedDictionary<string, object> dict, string key, string value)
-    {
-      if (string.IsNullOrEmpty(value))
-        return;
-      dict.Add(key, (object) value);
-    }
+        public virtual SortedDictionary<string, object> ToParamsDictionary()
+        {
+            return new SortedDictionary<string, object>(CustomParams);
+        }
 
-    protected void AddParam(SortedDictionary<string, object> dict, string key, DateTime value)
-    {
-      if (!(value != DateTime.MinValue))
-        return;
-      dict.Add(key, (object) value.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-    }
+        public void AddCustomParam(string key, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return;
+            CustomParams.Add(key, value);
+        }
 
-    protected void AddParam(SortedDictionary<string, object> dict, string key, float value)
-    {
-      dict.Add(key, (object) value.ToString((IFormatProvider) CultureInfo.InvariantCulture));
-    }
+        protected void AddParam(SortedDictionary<string, object> dict, string key, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return;
+            dict.Add(key, value);
+        }
 
-    protected void AddParam(SortedDictionary<string, object> dict, string key, IEnumerable<string> value)
-    {
-      if (value == null)
-        return;
-      dict.Add(key, (object) value);
-    }
+        protected void AddParam(SortedDictionary<string, object> dict, string key, DateTime value)
+        {
+            if (!(value != DateTime.MinValue))
+                return;
+            dict.Add(key, value.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+        }
 
-    protected void AddParam(SortedDictionary<string, object> dict, string key, bool value)
-    {
-      dict.Add(key, value ? (object) "true" : (object) "false");
-    }
+        protected void AddParam(SortedDictionary<string, object> dict, string key, float value)
+        {
+            dict.Add(key, value.ToString(CultureInfo.InvariantCulture));
+        }
 
-    protected void AddParam(SortedDictionary<string, object> dict, string key, bool? value)
-    {
-      if (!value.HasValue)
-        return;
-      this.AddParam(dict, key, value.Value);
-    }
+        protected void AddParam(SortedDictionary<string, object> dict, string key, IEnumerable<string> value)
+        {
+            if (value == null)
+                return;
+            dict.Add(key, value);
+        }
 
-    protected void AddCoordinates(SortedDictionary<string, object> dict, string key, object coordObj)
-    {
-      if (coordObj == null)
-        return;
-      if (coordObj is Rectangle)
-      {
-        Rectangle rectangle = (Rectangle) coordObj;
-        dict.Add(key, (object) string.Format("{0},{1},{2},{3}", (object) rectangle.X, (object) rectangle.Y, (object) rectangle.Width, (object) rectangle.Height));
-      }
-      else if (coordObj is List<Rectangle>)
-      {
-        List<Rectangle> source = (List<Rectangle>) coordObj;
-        dict.Add(key, (object) string.Join("|", source.Select<Rectangle, string>((Func<Rectangle, string>) (r => string.Format("{0},{1},{2},{3}", (object) r.X, (object) r.Y, (object) r.Width, (object) r.Height))).ToArray<string>()));
-      }
-      else
-        dict.Add(key, (object) coordObj.ToString());
+        protected void AddParam(SortedDictionary<string, object> dict, string key, bool value)
+        {
+            dict.Add(key, value ? "true" : "false");
+        }
+
+        protected void AddParam(SortedDictionary<string, object> dict, string key, bool? value)
+        {
+            if (!value.HasValue)
+                return;
+            AddParam(dict, key, value.Value);
+        }
+
+        protected void AddCoordinates(SortedDictionary<string, object> dict, string key, object coordObj)
+        {
+            if (coordObj == null)
+                return;
+            if (coordObj is Rectangle)
+            {
+                var rectangle = (Rectangle) coordObj;
+                dict.Add(key, string.Format("{0},{1},{2},{3}", (object) rectangle.X, (object) rectangle.Y, (object) rectangle.Width, (object) rectangle.Height));
+            }
+            else if (coordObj is List<Rectangle>)
+            {
+                var source = (List<Rectangle>) coordObj;
+                dict.Add(key, string.Join("|", source.Select(r => string.Format("{0},{1},{2},{3}", (object) r.X, (object) r.Y, (object) r.Width, (object) r.Height)).ToArray()));
+            }
+            else
+            {
+                dict.Add(key, coordObj.ToString());
+            }
+        }
     }
-  }
 }
