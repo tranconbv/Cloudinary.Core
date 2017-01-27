@@ -1,7 +1,14 @@
 {
-  "version": "1.30.0-*",
+  "version": "1.30.0-beta",
   "description": "A port of the cloudinary api to dotnet core",
   "authors": [ "Trancon BV", "Joel Harkes" ],
+  "packOptions": {
+    "summary": "A port of the cloudinary api to dotnet core.",
+    "releaseNotes": "#Beta\n\n* Code cleanup\n* Better handling of async tasks \n\n# Alpha \n\n* Initial buildable solution: \n** Contains custom simple rectangle struct. \n** Throws whenever HttpContext.Current is used \n** Removed Aspx references",
+    "iconUrl": "http://res.cloudinary.com/cloudinary/image/upload/w_128/cloudinary_logo_square.png",
+    "tags": [ "cloudinary", "cdn", "core" ]
+  },
+  "title": "Cloudinary.Core",
   "buildOptions": {
     "debugType": "portable"
   },
@@ -21,4 +28,5 @@
     "netstandard1.6": {
     }
   }
+
 }
