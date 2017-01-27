@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Html;
 using Newtonsoft.Json;
@@ -134,7 +135,7 @@ namespace CloudinaryDotNet
             var stringBuilder1 =
                 new StringBuilder(string.Join("&",
                     parameters.Where(pair => pair.Value != null)
-                        .Select(pair => string.Format("{0}={1}", pair.Key, pair.Value is IEnumerable<string> ? string.Join(",", ((IEnumerable<string>) pair.Value).ToArray()) : pair.Value.ToString()))
+                        .Select(pair => string.Format("{0}={1}", pair.Key, pair.Value is IEnumerable<string> ? string.Join(",", ((IEnumerable<string>)pair.Value).ToArray()) : pair.Value.ToString()))
                         .ToArray()));
             stringBuilder1.Append(Account.ApiSecret);
             var hash = ComputeHash(stringBuilder1.ToString());
@@ -151,7 +152,7 @@ namespace CloudinaryDotNet
 
         public static string GetCloudinaryParam<T>(T e)
         {
-            var customAttributes = (DescriptionAttribute[]) typeof(T).GetTypeInfo().GetField(e.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
+            var customAttributes = (DescriptionAttribute[])typeof(T).GetTypeInfo().GetField(e.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (customAttributes.Length == 0)
                 throw new ArgumentException("Enum fields must be decorated with DescriptionAttribute!");
             return customAttributes[0].Description;
@@ -161,14 +162,19 @@ namespace CloudinaryDotNet
         {
             foreach (var field in typeof(T).GetTypeInfo().GetFields())
             {
-                var customAttributes = (DescriptionAttribute[]) field.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                var customAttributes = (DescriptionAttribute[])field.GetCustomAttributes(typeof(DescriptionAttribute), false);
                 if (customAttributes.Length != 0 && s == customAttributes[0].Description)
-                    return (T) field.GetValue(null);
+                    return (T)field.GetValue(null);
             }
             return default(T);
         }
 
         public HttpWebResponse Call(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
+        {
+            return CallAsync(method, url, parameters, file, extraHeaders).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        public async Task<HttpWebResponse> CallAsync(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
         {
             var httpWebRequest = RequestBuilder(url); //Todo migration to http client   
             httpWebRequest.Method = Enum.GetName(typeof(HttpMethod), method);
@@ -192,14 +198,14 @@ namespace CloudinaryDotNet
                 httpWebRequest.ContentType = "multipart/form-data; boundary=notrandomsequencetouseasboundary";
                 if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
                     FinalizeUploadParameters(parameters);
-                using (var requestStream = httpWebRequest.GetRequestStreamAsync().ConfigureAwait(false).GetAwaiter().GetResult() /*aiai*/)
+                using (var requestStream = await httpWebRequest.GetRequestStreamAsync() /*aiai*/)
                 {
                     using (var writer = new StreamWriter(requestStream))
                     {
                         foreach (var parameter in parameters)
                             if (parameter.Value != null)
                                 if (parameter.Value is IEnumerable<string>)
-                                    foreach (var str in (IEnumerable<string>) parameter.Value)
+                                    foreach (var str in (IEnumerable<string>)parameter.Value)
                                         WriteParam(writer, parameter.Key + "[]", str);
                                 else
                                     WriteParam(writer, parameter.Key, parameter.Value.ToString());
@@ -212,7 +218,7 @@ namespace CloudinaryDotNet
             label_40:
             try
             {
-                return (HttpWebResponse) httpWebRequest.GetResponseAsync().ConfigureAwait(false).GetAwaiter().GetResult(); /*aiaiai*/;
+                return (HttpWebResponse) await httpWebRequest.GetResponseAsync(); /*aiaiai*/;
             }
             catch (WebException ex)
             {

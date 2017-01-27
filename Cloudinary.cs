@@ -52,18 +52,24 @@ namespace CloudinaryDotNet
             }, new Tuple<BasicRawUploadParams, int>(parameters, bufferSize));
         }
 
-        public Task<RawUploadResult> UploadAsync(RawUploadParams parameters, string type = "auto")
+        public async Task<RawUploadResult> UploadAsync(RawUploadParams parameters, string type = "auto")
         {
-            return Task.Factory.StartNew(o =>
+            var url = Api.ApiUrlImgUpV.ResourceType(type).BuildUrl();
+            ResetInternalFileDescription(parameters.File, int.MaxValue);
+            using (var response = await Api.CallAsync(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
             {
-                var tuple = (Tuple<RawUploadParams, string>) o;
-                return Upload(tuple.Item1, tuple.Item2);
-            }, new Tuple<RawUploadParams, string>(parameters, type));
+                return RawUploadResult.Parse(response);
+            }
         }
 
-        public Task<ImageUploadResult> UploadAsync(ImageUploadParams parameters)
+        public async Task<ImageUploadResult> UploadAsync(ImageUploadParams parameters)
         {
-            return CallAsync(Upload, parameters);
+            var url = Api.ApiUrlImgUpV.BuildUrl();
+            ResetInternalFileDescription(parameters.File, int.MaxValue);
+            using (var response = await Api.CallAsync(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
+            {
+                return ImageUploadResult.Parse(response);
+            }
         }
 
         public Task<ExplicitResult> ExplicitAsync(ExplicitParams parameters)
@@ -126,9 +132,14 @@ namespace CloudinaryDotNet
             return CallAsync(DeleteDerivedResources, parameters);
         }
 
-        public Task<DelResResult> DeleteResourcesAsync(DelResParams parameters)
+        public async Task<DelResResult> DeleteResourcesAsync(DelResParams parameters)
         {
-            return CallAsync(DeleteResources, parameters);
+            var url = Api.ApiUrlV.Add("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType));
+            using (
+                var response = await Api.CallAsync(HttpMethod.DELETE, new UrlBuilder((string.IsNullOrEmpty(parameters.Tag) ? url.Add(parameters.Type) : url.Add("tags").Add(parameters.Tag)).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return DelResResult.Parse(response);
+            }
         }
 
         public Task<UpdateTransformResult> UpdateTransformAsync(UpdateTransformParams parameters)
