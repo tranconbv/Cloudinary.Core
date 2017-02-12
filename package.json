@@ -1,0 +1,23 @@
+{
+  "name": "cloudinary.core",
+  "version": "1.0.0",
+  "description": "this is a script helper for cloudinary core project",
+  "main": "index.js",
+  "scripts": {
+    "build" : "dotnet restore && dotnet build src/Cloudinary.Core",
+    "pack" : "dotnet pack -o . src/Cloudinary.Core",
+    "test" : "dotnet test src/Cloudinary.Tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/tranconbv/cloudinary.core.git"
+  },
+  "keywords": [
+    "cloudinary",
+    "dotnet",
+    "library"
+  ],
+  "author": "joelharkes",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/tranconbv/cloudinary.core#readme"
+}
