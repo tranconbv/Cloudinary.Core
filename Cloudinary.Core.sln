@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Cloudinary", "Cloudinary.xproj", "{3764BD01-2B04-4298-8965-A8B314572689}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Cloudinary.Core", "src/Cloudinary.Core/Cloudinary.xproj", "{3764BD01-2B04-4298-8965-A8B314572689}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
