@@ -4,8 +4,11 @@
     "debugType": "portable"
   },
   "dependencies": {
+    "CloudinaryDotNet" : {
+      "target" : "project"
+    },
     "System.Runtime.Serialization.Primitives": "4.3.0",
-    "xunit": "2.1.0",
+    "xunit": "2.2.0-rc1-build3507",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
   "testRunner": "xunit",
@@ -18,8 +21,6 @@
         }
       },
       "imports": [
-        "dotnet5.4",
-        "portable-net451+win8"
       ]
     }
   }
