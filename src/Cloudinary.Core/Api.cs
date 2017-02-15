@@ -91,45 +91,21 @@ namespace CloudinaryDotNet
 
         public string ApiBaseAddress { get; set; } = "https://api.cloudinary.com";
 
-        public Url Url
-        {
-            get { return new Url(Account.Cloud, this).CSubDomain(CSubDomain).Shorten(ShortenUrl).PrivateCdn(UsePrivateCdn).Secure(UsePrivateCdn).SecureDistribution(PrivateCdn); }
-        }
+        public Url Url => new Url(Account.Cloud, this).CSubDomain(CSubDomain).Shorten(ShortenUrl).PrivateCdn(UsePrivateCdn).Secure(UsePrivateCdn).SecureDistribution(PrivateCdn);
 
-        public Url UrlImgUp
-        {
-            get { return Url.ResourceType("image").Action("upload").UseRootPath(UseRootPath).Suffix(Suffix); }
-        }
+        public Url UrlImgUp => Url.ResourceType("image").Action("upload").UseRootPath(UseRootPath).Suffix(Suffix);
 
-        public Url UrlVideoUp
-        {
-            get { return Url.ResourceType("video").Action("upload").UseRootPath(UseRootPath).Suffix(Suffix); }
-        }
+        public Url UrlVideoUp => Url.ResourceType("video").Action("upload").UseRootPath(UseRootPath).Suffix(Suffix);
 
-        public Url ApiUrl
-        {
-            get { return Url.CloudinaryAddr(ApiBaseAddress); }
-        }
+        public Url ApiUrl => Url.CloudinaryAddr(ApiBaseAddress);
 
-        public Url ApiUrlImgUp
-        {
-            get { return ApiUrl.Action("upload").ResourceType("image"); }
-        }
+        public Url ApiUrlImgUp => ApiUrl.Action("upload").ResourceType("image");
 
-        public Url ApiUrlV
-        {
-            get { return ApiUrl.ApiVersion("v1_1"); }
-        }
+        public Url ApiUrlV => ApiUrl.ApiVersion("v1_1");
 
-        public Url ApiUrlImgUpV
-        {
-            get { return ApiUrlV.Action("upload").ResourceType("image"); }
-        }
+        public Url ApiUrlImgUpV => ApiUrlV.Action("upload").ResourceType("image");
 
-        public Url ApiUrlVideoUpV
-        {
-            get { return ApiUrlV.Action("upload").ResourceType("video"); }
-        }
+        public Url ApiUrlVideoUpV => ApiUrlV.Action("upload").ResourceType("video");
 
         public string SignParameters(IDictionary<string, object> parameters)
         {
@@ -170,18 +146,10 @@ namespace CloudinaryDotNet
             return default(T);
         }
 
-        [Obsolete("Use call async")]
-        public HttpResponseMessage Call(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
-        {
-            return CallAsync(method, url, parameters, file, extraHeaders).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
-
         public async Task<HttpResponseMessage> CallAsync(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
         {
             using (var stream = new MemoryStream())
             {
-
-
                 var bytes = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", Account.ApiKey, Account.ApiSecret));
                 using (var client = new HttpClient()
                 {
@@ -225,15 +193,7 @@ namespace CloudinaryDotNet
                         stream.Position = 0;
 
                     }
-                    try
-                    {
-                        url = url.Replace("https://", "http://");
-                        return await client.SendAsync(new HttpRequestMessage(method, url) { Content = content });
-                    }
-                    catch (Exception e)
-                    {
-                        throw;
-                    }
+                    return await client.SendAsync(new HttpRequestMessage(method, url) { Content = content });
                 }
 
             }
@@ -253,8 +213,8 @@ namespace CloudinaryDotNet
             {
                 parameters["callback"] = BuildCallbackUrl(path);
             }
-            catch (HttpContextNotFoundException ex)
-            {
+            catch (HttpContextNotFoundException)
+            {//todo throw?
             }
             if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
                 FinalizeUploadParameters(parameters);
@@ -304,7 +264,7 @@ namespace CloudinaryDotNet
             if (htmlOptions.ContainsKey("class"))
                 stringBuilder.Append(" ").Append(htmlOptions["class"]);
             foreach (var htmlOption in htmlOptions)
-                if (!(htmlOption.Key == "class"))
+                if (htmlOption.Key != "class")
                     stringBuilder.Append("' ").Append(htmlOption.Key).Append("='").Append(WebUtility.HtmlEncode(htmlOption.Value));
             stringBuilder.Append("'/>");
             return new HtmlString(stringBuilder.ToString());
@@ -339,7 +299,7 @@ namespace CloudinaryDotNet
         }
 
         private void WriteFile(StreamWriter writer, FileDescription file)
-        {
+        { //todo add rather concat streams than write into new stream.
             if (file.IsRemote)
             {
                 WriteParam(writer, "file", file.FilePath);
@@ -411,12 +371,6 @@ namespace CloudinaryDotNet
             writer.Write("\r\n");
         }
 
-        public class HttpContextNotFoundException //todo move
-            : CloudinaryException
-        {
-            public HttpContextNotFoundException(string format) : base(format)
-            {
-            }
-        }
+
     }
 }

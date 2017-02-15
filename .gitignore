@@ -5,3 +5,4 @@ bin
 *.user
 project.lock.json
 .vs
+*.nupkg

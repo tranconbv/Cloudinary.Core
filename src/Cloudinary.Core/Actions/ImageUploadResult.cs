@@ -46,7 +46,7 @@ namespace CloudinaryDotNet.Actions
 
         public List<ResponsiveBreakpointList> ResponsiveBreakpoints { get; set; }
 
-        internal static async Task<ImageUploadResult> Parse(HttpResponseMessage response)
+        internal new static async Task<ImageUploadResult> Parse(HttpResponseMessage response)
         {
             var imageUploadResult = await Parse<ImageUploadResult>(response);
             if (imageUploadResult.JsonObj != null)

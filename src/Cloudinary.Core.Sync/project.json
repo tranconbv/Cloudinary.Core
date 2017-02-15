@@ -1,0 +1,36 @@
+{
+  "version": "1.30.0",
+  "description": "Based on official cloudinary api, moved dotnet core. Extension methods to bring back Api Synchronous calls.",
+  "authors": [
+    "tranconbv",
+    "joelharkes"
+  ],
+  "projectUrl": "https://github.com/joelharkes/Cloudinary.Core",
+  "packOptions": {
+    "summary": "Based on official cloudinary api, moved dotnet core. Extension methods to bring back Api Synchronous calls.",
+    "releaseNotes": "#1.30.0\n\n* Async first\n* Replaced WebClient with HttpClient\n* Moved Synchronous code to Cloudinary.Core.ExecSync (Extension methods on Cloudinary)\n\n# 1.30.0-camma\n\n* properly implemented Async for: UploadAsync & DeleteResourcesAsync\n\n# 1.30.0-beta\n\n* Code cleanup\n* Better handling of async tasks \n\n# 1.30.0-alpha \n\n* Initial buildable solution: \n** Contains custom simple rectangle struct. \n** Throws whenever HttpContext.Current is used \n** Removed Aspx references",
+    "iconUrl": "http://res.cloudinary.com/cloudinary/image/upload/w_128/cloudinary_logo_square.png",
+    "tags": [
+      "cloudinary",
+      "cdn",
+      "core"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/joelharkes/Cloudinary.Core"
+    }
+  },
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "Cloudinary.Core": {
+      "target": "project"
+    }
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {}
+    }
+  }
+}

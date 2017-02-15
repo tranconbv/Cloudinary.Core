@@ -19,10 +19,7 @@ namespace CloudinaryDotNet.Actions
 
         public string Type { get; set; }
 
-        public virtual ResourceType ResourceType
-        {
-            get { return ResourceType.Raw; }
-        }
+        public virtual ResourceType ResourceType => ResourceType.Raw;
 
         public override void Check()
         {

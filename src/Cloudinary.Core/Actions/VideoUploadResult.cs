@@ -37,7 +37,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "duration")]
         public double Duration { get; protected set; }
 
-        internal static Task<VideoUploadResult> Parse(HttpResponseMessage response)
+        internal new static Task<VideoUploadResult> Parse(HttpResponseMessage response)
         {
             return Parse<VideoUploadResult>(response);
         }

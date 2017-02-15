@@ -1,0 +1,33 @@
+{
+  "version": "1.30.0",
+  "description": "Based on official cloudinary api, moved dotnet core.",
+  "authors": [ "tranconbv", "joelharkes" ],
+  "projectUrl": "https://github.com/joelharkes/Cloudinary.Core",
+  "packOptions": {
+    "summary": "Based on official cloudinary api, moved dotnet core.",
+    "releaseNotes": "#1.30.0\n\n* Async first\n* Replaced WebClient with HttpClient\n* Moved Synchronous code to Cloudinary.Core.Sync (Extension methods on Cloudinary)\n\n# 1.30.0-camma\n\n* properly implemented Async for: UploadAsync & DeleteResourcesAsync\n\n# 1.30.0-beta\n\n* Code cleanup\n* Better handling of async tasks \n\n# 1.30.0-alpha \n\n* Initial buildable solution: \n** Contains custom simple rectangle struct. \n** Throws whenever HttpContext.Current is used \n** Removed Aspx references",
+    "iconUrl": "http://res.cloudinary.com/cloudinary/image/upload/w_128/cloudinary_logo_square.png",
+    "tags": [ "cloudinary", "cdn", "core" ],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/joelharkes/Cloudinary.Core"
+    }
+  },
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.Html.Abstractions": "1.1.0",
+    "Newtonsoft.Json": "9.0.1",
+    "System.ComponentModel.Primitives": "4.3.0",
+    "System.Net.Http": "4.3.0",
+    "System.Runtime": "4.3.0",
+    "System.Runtime.Extensions": "4.3.0",
+    "System.Runtime.Serialization.Formatters": "4.3.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+    }
+  }
+
+}

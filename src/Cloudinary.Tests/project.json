@@ -4,8 +4,11 @@
     "debugType": "portable"
   },
   "dependencies": {
-    "CloudinaryDotNet" : {
+    "Cloudinary.Core" : {
       "target" : "project"
+    },
+    "Cloudinary.Core.Sync" : {
+        "target" : "project"
     },
     "System.Runtime.Serialization.Primitives": "4.3.0",
     "xunit": "2.2.0-rc1-build3507",

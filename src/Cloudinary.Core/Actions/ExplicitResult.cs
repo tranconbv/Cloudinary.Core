@@ -25,7 +25,7 @@ namespace CloudinaryDotNet.Actions
 
         public List<ResponsiveBreakpointList> ResponsiveBreakpoints { get; set; }
 
-        internal static async Task<ExplicitResult> Parse(HttpResponseMessage response)
+        internal new static async Task<ExplicitResult> Parse(HttpResponseMessage response)
         {
             var explicitResult = await Parse<ExplicitResult>(response);
             if (explicitResult.JsonObj != null)

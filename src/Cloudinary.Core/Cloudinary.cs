@@ -54,12 +54,6 @@ namespace CloudinaryDotNet
             sb.AppendLine("\"></script>");
         }
         
-        [Obsolete("Use Async variant")]
-        private UploadMappingResults CallUploadMappingsAPI(HttpMethod httpMethod, UploadMappingParams parameters)
-        {
-            return CallUploadMappingsApiAsync(httpMethod, parameters).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
-
         private async Task<UploadMappingResults> CallUploadMappingsApiAsync(HttpMethod httpMethod, UploadMappingParams parameters)
         {
             SortedDictionary<string, object> parameters1 = null;
@@ -81,10 +75,6 @@ namespace CloudinaryDotNet
         }
 
 
-        public ArchiveResult CreateArchive(ArchiveParams parameters)
-        {
-            return CreateArchiveAsync(parameters).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
 
         public async Task<ArchiveResult> CreateArchiveAsync(ArchiveParams parameters)
         {
@@ -100,10 +90,6 @@ namespace CloudinaryDotNet
         }
 
 
-        public TransformResult CreateTransform(CreateTransformParams parameters)
-        {
-            return CreateTransformAsync(parameters).Sync();
-        }
 
         public async Task<TransformResult> CreateTransformAsync(CreateTransformParams parameters)
         {
@@ -113,10 +99,7 @@ namespace CloudinaryDotNet
             }
         }
 
-        public UploadMappingResults CreateUploadMapping(string folder, string template)
-        {
-            return CreateUploadMappingAsync(folder,template).Sync();
-        }
+
 
         public Task<UploadMappingResults> CreateUploadMappingAsync(string folder, string template)
         {
@@ -127,10 +110,7 @@ namespace CloudinaryDotNet
             return CallUploadMappingsApiAsync(HttpMethod.Post, new UploadMappingParams { Folder = folder, Template = template });
         }
 
-        public UploadPresetResult CreateUploadPreset(UploadPresetParams parameters)
-        {
-            return CreateUploadPresetAsync(parameters).Sync();
-        }
+
 
         public async Task<UploadPresetResult> CreateUploadPresetAsync(UploadPresetParams parameters)
         {
@@ -140,27 +120,7 @@ namespace CloudinaryDotNet
             }
         }
 
-        public DelResResult DeleteAllResources()
-        {
-            return DeleteResources(new DelResParams {All = true});
-        }
 
-        public DelResResult DeleteAllResources(bool keepOriginal, string nextCursor)
-        {
-            return DeleteResources(new DelResParams {All = true, KeepOriginal = keepOriginal, NextCursor = nextCursor});
-        }
-
-        public DelDerivedResResult DeleteDerivedResources(params string[] ids)
-        {
-            var parameters = new DelDerivedResParams();
-            parameters.DerivedResources.AddRange(ids);
-            return DeleteDerivedResources(parameters);
-        }
-
-        public DelDerivedResResult DeleteDerivedResources(DelDerivedResParams parameters)
-        {
-            return DeleteDerivedResourcesAsync(parameters).Sync();
-        }
 
         public async Task<DelDerivedResResult> DeleteDerivedResourcesAsync(DelDerivedResParams parameters)
         {
@@ -168,25 +128,6 @@ namespace CloudinaryDotNet
             {
                 return await DelDerivedResResult.Parse(response);
             }
-        }
-
-        public DelResResult DeleteResources(ResourceType type, params string[] publicIds)
-        {
-            var parameters = new DelResParams {ResourceType = type};
-            parameters.PublicIds.AddRange(publicIds);
-            return DeleteResources(parameters);
-        }
-
-        public DelResResult DeleteResources(params string[] publicIds)
-        {
-            var parameters = new DelResParams();
-            parameters.PublicIds.AddRange(publicIds);
-            return DeleteResources(parameters);
-        }
-
-        public DelResResult DeleteResources(DelResParams parameters)
-        {
-            return DeleteResourcesAsync(parameters).Sync();
         }
 
         public async Task<DelResResult> DeleteResourcesAsync(DelResParams parameters)
@@ -201,30 +142,7 @@ namespace CloudinaryDotNet
             }
         }
 
-        public DelResResult DeleteResourcesByPrefix(string prefix)
-        {
-            return DeleteResources(new DelResParams {Prefix = prefix});
-        }
 
-        public DelResResult DeleteResourcesByPrefix(string prefix, bool keepOriginal, string nextCursor)
-        {
-            return DeleteResources(new DelResParams {Prefix = prefix, KeepOriginal = keepOriginal, NextCursor = nextCursor});
-        }
-
-        public DelResResult DeleteResourcesByTag(string tag)
-        {
-            return DeleteResources(new DelResParams {Tag = tag});
-        }
-
-        public DelResResult DeleteResourcesByTag(string tag, bool keepOriginal, string nextCursor)
-        {
-            return DeleteResources(new DelResParams {Tag = tag, KeepOriginal = keepOriginal, NextCursor = nextCursor});
-        }
-
-        public TransformResult DeleteTransform(string transformName)
-        {
-            return DeleteTransformAsync(transformName).Sync();
-        }
 
         public async Task<TransformResult> DeleteTransformAsync(string transformName)
         {
@@ -234,16 +152,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        //todo extension method
-        public UploadMappingResults DeleteUploadMapping()
-        {
-            return DeleteUploadMapping(string.Empty);
-        }
-
-        public UploadMappingResults DeleteUploadMapping(string folder)
-        {
-            return DeleteUploadMappingAsync(folder).Sync();
-        }
 
         public async Task<UploadMappingResults> DeleteUploadMappingAsync(string folder)
         {
@@ -253,10 +161,6 @@ namespace CloudinaryDotNet
             return await CallUploadMappingsApiAsync(HttpMethod.Delete, parameters);
         }
 
-        public DeleteUploadPresetResult DeleteUploadPreset(string name)
-        {
-            return DeleteUploadPresetAsync(name).Sync();
-        }
 
         public async Task<DeleteUploadPresetResult> DeleteUploadPresetAsync(string name)
         {
@@ -264,11 +168,6 @@ namespace CloudinaryDotNet
             {
                 return await DeleteUploadPresetResult.Parse(response);
             }
-        }
-
-        public DeletionResult Destroy(DeletionParams parameters)
-        {
-            return DestroyAsync(parameters).Sync();
         }
 
         public async Task<DeletionResult> DestroyAsync(DeletionParams parameters)
@@ -314,22 +213,12 @@ namespace CloudinaryDotNet
             return GetDownloadUrl(builder, sortedDictionary);
         }
 
-        public ExplicitResult Explicit(ExplicitParams parameters)
-        {
-            return ExplicitAsync(parameters).Sync();
-        }
-
         public async Task<ExplicitResult> ExplicitAsync(ExplicitParams parameters)
         {
             using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("explicit").BuildUrl(), parameters.ToParamsDictionary(), null, null))
             {
                 return await ExplicitResult.Parse(response);
             }
-        }
-
-        public ExplodeResult Explode(ExplodeParams parameters)
-        {
-            return ExplodeAsync(parameters).Sync();
         }
 
         public async Task<ExplodeResult> ExplodeAsync(ExplodeParams parameters)
@@ -376,15 +265,8 @@ namespace CloudinaryDotNet
             return builder.ToString();
         }
 
-        public GetResourceResult GetResource(string publicId)
-        {
-            return GetResource(new GetResourceParams(publicId));
-        }
 
-        public GetResourceResult GetResource(GetResourceParams parameters)
-        {
-            return GetResourceAsync(parameters).Sync();
-        }
+
 
         public async Task<GetResourceResult> GetResourceAsync(GetResourceParams parameters)
         {
@@ -395,16 +277,6 @@ namespace CloudinaryDotNet
             {
                 return await GetResourceResult.Parse(response);
             }
-        }
-
-        public GetTransformResult GetTransform(string transform)
-        {
-            return GetTransform(new GetTransformParams {Transformation = transform});
-        }
-
-        public GetTransformResult GetTransform(GetTransformParams parameters)
-        {
-            return GetTransformAsync(parameters).Sync();
         }
 
         public async Task<GetTransformResult> GetTransformAsync(GetTransformParams parameters)
@@ -427,10 +299,6 @@ namespace CloudinaryDotNet
             return new UrlBuilder(GetUploadMappingUrl(), parameters.ToParamsDictionary()).ToString();
         }
 
-        public GetUploadPresetResult GetUploadPreset(string name)
-        {
-            return GetUploadPresetAsync(name).Sync();
-        }
 
         public async Task<GetUploadPresetResult> GetUploadPresetAsync(string name)
         {
@@ -438,11 +306,6 @@ namespace CloudinaryDotNet
             {
                 return await GetUploadPresetResult.Parse(response);
             }
-        }
-
-        public UsageResult GetUsage()
-        {
-            return GetUsageAsync().Sync();
         }
 
         public async Task<UsageResult> GetUsageAsync()
@@ -453,25 +316,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public ListResourcesResult ListResourceByPublicIds(IEnumerable<string> publicIds, bool tags, bool context, bool moderations)
-        {
-            var specificResourcesParams = new ListSpecificResourcesParams();
-            specificResourcesParams.PublicIds = new List<string>(publicIds);
-            specificResourcesParams.Tags = tags;
-            specificResourcesParams.Context = context;
-            specificResourcesParams.Moderations = moderations;
-            return ListResources(specificResourcesParams);
-        }
-
-        public ListResourcesResult ListResources(string nextCursor = null, bool tags = true, bool context = true, bool moderations = true)
-        {
-            return ListResources(new ListResourcesParams {NextCursor = nextCursor, Tags = tags, Context = context, Moderations = moderations});
-        }
-
-        public ListResourcesResult ListResources(ListResourcesParams parameters)
-        {
-            return ListResourcesAsync(parameters).Sync();
-        }
 
         public async Task<ListResourcesResult> ListResourcesAsync(ListResourcesParams parameters)
         {
@@ -494,62 +338,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public ListResourcesResult ListResourcesByModerationStatus(string kind, ModerationStatus status, bool tags = true, bool context = true, bool moderations = true, string nextCursor = null)
-        {
-            var moderationParams = new ListResourcesByModerationParams();
-            moderationParams.ModerationKind = kind;
-            moderationParams.ModerationStatus = status;
-            moderationParams.Tags = tags;
-            moderationParams.Context = context;
-            moderationParams.Moderations = moderations;
-            moderationParams.NextCursor = nextCursor;
-            return ListResources(moderationParams);
-        }
-
-        public ListResourcesResult ListResourcesByPrefix(string prefix, string type = "upload", string nextCursor = null)
-        {
-            var resourcesByPrefixParams = new ListResourcesByPrefixParams();
-            resourcesByPrefixParams.Type = type;
-            resourcesByPrefixParams.Prefix = prefix;
-            resourcesByPrefixParams.NextCursor = nextCursor;
-            return ListResources(resourcesByPrefixParams);
-        }
-
-        public ListResourcesResult ListResourcesByPrefix(string prefix, bool tags, bool context, bool moderations, string type = "upload", string nextCursor = null)
-        {
-            var resourcesByPrefixParams = new ListResourcesByPrefixParams();
-            resourcesByPrefixParams.Tags = tags;
-            resourcesByPrefixParams.Context = context;
-            resourcesByPrefixParams.Moderations = moderations;
-            resourcesByPrefixParams.Type = type;
-            resourcesByPrefixParams.Prefix = prefix;
-            resourcesByPrefixParams.NextCursor = nextCursor;
-            return ListResources(resourcesByPrefixParams);
-        }
-
-        public ListResourcesResult ListResourcesByPublicIds(IEnumerable<string> publicIds)
-        {
-            return ListResources(new ListSpecificResourcesParams {PublicIds = new List<string>(publicIds)});
-        }
-
-        public ListResourcesResult ListResourcesByTag(string tag, string nextCursor = null)
-        {
-            var resourcesByTagParams = new ListResourcesByTagParams();
-            resourcesByTagParams.Tag = tag;
-            resourcesByTagParams.NextCursor = nextCursor;
-            return ListResources(resourcesByTagParams);
-        }
-
-        public ListResourcesResult ListResourcesByType(string type, string nextCursor = null)
-        {
-            return ListResources(new ListResourcesParams {Type = type, NextCursor = nextCursor});
-        }
-
-        public ListResourceTypesResult ListResourceTypes()
-        {
-            return ListResourceTypesAsync().Sync();
-        }
-
         public async Task<ListResourceTypesResult> ListResourceTypesAsync()
         {
             using (var response = await Api.CallAsync(HttpMethod.Get, Api.ApiUrlV.Add("resources").BuildUrl(), null, null, null))
@@ -558,15 +346,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public ListTagsResult ListTags()
-        {
-            return ListTags(new ListTagsParams());
-        }
-
-        public ListTagsResult ListTags(ListTagsParams parameters)
-        {
-            return ListTagsAsync(parameters).Sync();
-        }
 
         public async Task<ListTagsResult> ListTagsAsync(ListTagsParams parameters)
         {
@@ -578,20 +357,8 @@ namespace CloudinaryDotNet
             }
         }
 
-        public ListTagsResult ListTagsByPrefix(string prefix)
-        {
-            return ListTags(new ListTagsParams {Prefix = prefix});
-        }
 
-        public ListTransformsResult ListTransformations()
-        {
-            return ListTransformations(new ListTransformsParams());
-        }
 
-        public ListTransformsResult ListTransformations(ListTransformsParams parameters)
-        {
-            return ListTransformationsAsync(parameters).Sync();
-        }
 
         public async Task<ListTransformsResult> ListTransformationsAsync(ListTransformsParams parameters)
         {
@@ -601,15 +368,7 @@ namespace CloudinaryDotNet
             }
         }
 
-        public ListUploadPresetsResult ListUploadPresets(string nextCursor = null)
-        {
-            return ListUploadPresets(new ListUploadPresetsParams {NextCursor = nextCursor});
-        }
 
-        public ListUploadPresetsResult ListUploadPresets(ListUploadPresetsParams parameters)
-        {
-            return ListUploadPresetsAsync(parameters).Sync();
-        }
 
         public async Task<ListUploadPresetsResult> ListUploadPresetsAsync(ListUploadPresetsParams parameters)
         {
@@ -620,10 +379,6 @@ namespace CloudinaryDotNet
         }
 
 
-        public SpriteResult MakeSprite(SpriteParams parameters)
-        {
-            return MakeSpriteAsync(parameters).Sync();
-        }
 
         public async Task<SpriteResult> MakeSpriteAsync(SpriteParams parameters)
         {
@@ -633,10 +388,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public MultiResult Multi(MultiParams parameters)
-        {
-            return MultiAsync(parameters).Sync();
-        }
 
         public async Task<MultiResult> MultiAsync(MultiParams parameters)
         {
@@ -653,16 +404,6 @@ namespace CloudinaryDotNet
             return string.Concat(buffer.Select(x => x.ToString("X2")).ToArray());
         }
 
-        //Todo extension metohd
-        public RenameResult Rename(string fromPublicId, string toPublicId, bool overwrite = false)
-        {
-            return Rename(new RenameParams(fromPublicId, toPublicId) {Overwrite = overwrite});
-        }
-
-        public RenameResult Rename(RenameParams parameters)
-        {
-            return RenameAsync(parameters).Sync();
-        }
 
         public async Task<RenameResult> RenameAsync(RenameParams parameters)
         {
@@ -679,17 +420,6 @@ namespace CloudinaryDotNet
             file.BytesSent = 0;
         }
 
-        public RestoreResult Restore(params string[] publicIds)
-        {
-            var parameters = new RestoreParams();
-            parameters.PublicIds.AddRange(publicIds);
-            return Restore(parameters);
-        }
-
-        public RestoreResult Restore(RestoreParams parameters)
-        {
-            return RestoreAsync(parameters).Sync();
-        }
 
         public async Task<RestoreResult> RestoreAsync(RestoreParams parameters)
         {
@@ -701,10 +431,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public GetFoldersResult RootFolders()
-        {
-            return RootFoldersAsync().Sync();
-        }
 
 
         public async Task<GetFoldersResult> RootFoldersAsync()
@@ -715,10 +441,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public GetFoldersResult SubFolders(string folder)
-        {
-            return SubFoldersAsync(folder).Sync();
-        }
 
         public async Task<GetFoldersResult> SubFoldersAsync(string folder)
         {
@@ -731,28 +453,12 @@ namespace CloudinaryDotNet
         }
 
 
-        public TagResult Tag(TagParams parameters)
-        {
-            return TagAsync(parameters).Sync();
-        }
-
         public async Task<TagResult> TagAsync(TagParams parameters)
         {
             using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("tags").BuildUrl(), parameters.ToParamsDictionary(), null, null))
             {
                 return await TagResult.Parse(response);
             }
-        }
-
-        //todo extension method
-        public TextResult Text(string text)
-        {
-            return Text(new TextParams(text));
-        }
-
-        public TextResult Text(TextParams parameters)
-        {
-            return TextAsync(parameters).Sync();
         }
 
         public async Task<TextResult> TextAsync(TextParams parameters)
@@ -763,17 +469,7 @@ namespace CloudinaryDotNet
             }
         }
 
-        public GetResourceResult UpdateResource(string publicId, ModerationStatus moderationStatus)
-        {
-            return UpdateResource(new UpdateParams(publicId) {ModerationStatus = moderationStatus});
-        }
 
-        public GetResourceResult UpdateResource(UpdateParams parameters)
-        {
-            return UpdateResourceAsync(parameters).Sync();
-        }
-
-        //todo extensoin method
         public async Task<GetResourceResult> UpdateResourceAsync(UpdateParams parameters)
         {
             var url = Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add(parameters.Type).Add(parameters.PublicId).BuildUrl();
@@ -781,11 +477,6 @@ namespace CloudinaryDotNet
             {
                 return await GetResourceResult.Parse(response);
             }
-        }
-
-        public UpdateTransformResult UpdateTransform(UpdateTransformParams parameters)
-        {
-            return UpdateTransformAsync(parameters).Sync();
         }
 
         public async Task<UpdateTransformResult> UpdateTransformAsync(UpdateTransformParams parameters)
@@ -796,10 +487,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public UploadMappingResults UpdateUploadMapping(string folder, string newTemplate)
-        {
-            return UpdateUploadMappingAsync(folder, newTemplate).Sync();
-        }
 
         public async Task<UploadMappingResults> UpdateUploadMappingAsync(string folder, string newTemplate)
         {
@@ -810,10 +497,6 @@ namespace CloudinaryDotNet
             return await CallUploadMappingsApiAsync(HttpMethod.Put, new UploadMappingParams { Folder = folder, Template = newTemplate });
         }
 
-        public UploadPresetResult UpdateUploadPreset(UploadPresetParams parameters)
-        {
-            return UpdateUploadPresetAsync(parameters).Sync();
-        }
 
         public async Task<UploadPresetResult> UpdateUploadPresetAsync(UploadPresetParams parameters)
         {
@@ -825,20 +508,7 @@ namespace CloudinaryDotNet
             }
         }
 
-        public ImageUploadResult Upload(ImageUploadParams parameters)
-        {
-            return UploadAsync(parameters).Sync();
-        }
 
-        public VideoUploadResult Upload(VideoUploadParams parameters)
-        {
-            return UploadAsync(parameters).Sync();
-        }
-
-        public RawUploadResult Upload(string resourceType, IDictionary<string, object> parameters, FileDescription fileDescription)
-        {
-            return UploadAsync(resourceType, parameters, fileDescription).Sync();
-        }
 
         public async Task<RawUploadResult> UploadAsync(string resourceType, IDictionary<string, object> parameters, FileDescription fileDescription)
         {
@@ -854,10 +524,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public RawUploadResult Upload(RawUploadParams parameters, string type = "auto")
-        {
-            return UploadAsync(parameters, type).Sync();
-        }
 
         public async Task<RawUploadResult> UploadAsync(RawUploadParams parameters, string type = "auto")
         {
@@ -889,34 +555,6 @@ namespace CloudinaryDotNet
             }
         }
 
-        public RawUploadResult UploadLarge(RawUploadParams parameters, int bufferSize = 20971520)
-        {
-            return UploadLarge<RawUploadResult>(parameters, bufferSize);
-        }
-
-        public ImageUploadResult UploadLarge(ImageUploadParams parameters, int bufferSize = 20971520)
-        {
-            return UploadLarge<ImageUploadResult>(parameters, bufferSize);
-        }
-
-        public VideoUploadResult UploadLarge(VideoUploadParams parameters, int bufferSize = 20971520)
-        {
-            return UploadLarge<VideoUploadResult>(parameters, bufferSize);
-        }
-
-        [Obsolete("Use UploadLarge(parameters, bufferSize) instead.")]
-        public UploadResult UploadLarge(BasicRawUploadParams parameters, int bufferSize = 20971520, bool isRaw = false)
-        {
-            if (isRaw)
-                return UploadLarge<RawUploadResult>(parameters, bufferSize);
-            return UploadLarge<ImageUploadResult>(parameters, bufferSize);
-        }
-
-        public T UploadLarge<T>(BasicRawUploadParams parameters, int bufferSize = 20971520) where T : UploadResult, new()
-        {
-            return UploadLargeAsync<T>(parameters, bufferSize).Sync();
-        }
-
         public async Task<T> UploadLargeAsync<T>(BasicRawUploadParams parameters, int bufferSize = 20971520) where T : UploadResult, new()
         {
             var apiUrlImgUpV = Api.ApiUrlImgUpV;
@@ -945,37 +583,16 @@ namespace CloudinaryDotNet
         }
 
 
-        public RawUploadResult UploadLargeRaw(BasicRawUploadParams parameters, int bufferSize = 20971520)
-        {
-            if (parameters is RawUploadParams)
-                throw new ArgumentException("Please use BasicRawUploadParams class for large raw file uploading!");
-            parameters.Check();
-            if (parameters.File.IsRemote)
-                throw new ArgumentException("The UploadLargeRaw method is intended to be used for large local file uploading and can't be used for remote file uploading!");
-            return UploadLarge(parameters, bufferSize, true) as RawUploadResult;
-        }
-
         public Task<RawUploadResult> UploadLargeRawAsync(BasicRawUploadParams parameters, int bufferSize = 20971520)
         {
-            return Task.Factory.StartNew(o =>
-            {
-                var tuple = (Tuple<BasicRawUploadParams, int>) o;
-                return UploadLargeRaw(tuple.Item1, tuple.Item2);
-            }, new Tuple<BasicRawUploadParams, int>(parameters, bufferSize));
+            return UploadLargeAsync<RawUploadResult>(parameters, bufferSize);
         }
 
-        public UploadMappingResults UploadMapping(string folder)
-        {
-            if (string.IsNullOrEmpty(folder))
-                throw new ArgumentException("Folder must be specified.");
-            return CallUploadMappingsAPI(HttpMethod.Get, new UploadMappingParams {Folder = folder});
-        }
-
-        public UploadMappingResults UploadMappings(UploadMappingParams parameters)
+        public async Task<UploadMappingResults> UploadMappingsAsync(UploadMappingParams parameters)
         {
             if (parameters == null)
                 parameters = new UploadMappingParams();
-            return CallUploadMappingsAPI(HttpMethod.Get, parameters);
+            return await CallUploadMappingsApiAsync(HttpMethod.Get, parameters);
         }
     }
 }
