@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -16,7 +17,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "folders")]
         public List<Folder> Folders { get; set; }
 
-        internal static GetFoldersResult Parse(HttpWebResponse response)
+        internal static Task<GetFoldersResult> Parse(HttpResponseMessage response)
         {
             return Parse<GetFoldersResult>(response);
         }

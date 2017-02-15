@@ -4,3 +4,4 @@ bin
 .vscode
 *.user
 project.lock.json
+.vs

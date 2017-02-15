@@ -6,8 +6,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -35,7 +36,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "image_infos")]
         public Dictionary<string, ImageInfo> ImageInfos { get; protected set; }
 
-        internal static SpriteResult Parse(HttpWebResponse response)
+        internal static Task<SpriteResult> Parse(HttpResponseMessage response)
         {
             return Parse<SpriteResult>(response);
         }

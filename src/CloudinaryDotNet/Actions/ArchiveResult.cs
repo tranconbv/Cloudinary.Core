@@ -4,7 +4,8 @@
 // MVID: 85795B22-FB3A-4216-BE8E-309002E93AB1
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
-using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -20,9 +21,9 @@ namespace CloudinaryDotNet.Actions
 
         public int FileCount { get; private set; }
 
-        internal static ArchiveResult Parse(HttpWebResponse response)
+        internal static async Task<ArchiveResult> Parse(HttpResponseMessage response)
         {
-            var archiveResult = Parse<ArchiveResult>(response);
+            var archiveResult = await Parse<ArchiveResult>(response);
             archiveResult.Url = archiveResult.JsonObj.Value<string>("url");
             archiveResult.SecureUrl = archiveResult.JsonObj.Value<string>("secure_url");
             archiveResult.PublicId = archiveResult.JsonObj.Value<string>("public_id");

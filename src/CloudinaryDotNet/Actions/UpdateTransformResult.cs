@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -28,7 +29,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "derived")]
         public TransformDerived[] Derived { get; protected set; }
 
-        internal static UpdateTransformResult Parse(HttpWebResponse response)
+        internal static Task<UpdateTransformResult> Parse(HttpResponseMessage response)
         {
             return Parse<UpdateTransformResult>(response);
         }

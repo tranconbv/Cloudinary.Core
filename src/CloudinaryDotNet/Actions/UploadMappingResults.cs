@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -19,9 +20,9 @@ namespace CloudinaryDotNet.Actions
 
         public string NextCursor { get; protected set; }
 
-        internal static UploadMappingResults Parse(HttpWebResponse response)
+        internal static async Task<UploadMappingResults> Parse(HttpResponseMessage response)
         {
-            var uploadMappingResults = Parse<UploadMappingResults>(response);
+            var uploadMappingResults = await Parse<UploadMappingResults>(response);
             if (uploadMappingResults.Mappings == null)
                 uploadMappingResults.Mappings = new Dictionary<string, string>();
             if (uploadMappingResults.JsonObj != null)

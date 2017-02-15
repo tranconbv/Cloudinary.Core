@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CloudinaryDotNet.Actions;
@@ -43,245 +44,246 @@ namespace CloudinaryDotNet
 
         public Api Api { get; }
 
-        public Task<RawUploadResult> UploadLargeRawAsync(BasicRawUploadParams parameters, int bufferSize = 20971520)
+        private static void AppendScriptLine(StringBuilder sb, string dir, string script)
         {
-            return Task.Factory.StartNew(o =>
-            {
-                var tuple = (Tuple<BasicRawUploadParams, int>) o;
-                return UploadLargeRaw(tuple.Item1, tuple.Item2);
-            }, new Tuple<BasicRawUploadParams, int>(parameters, bufferSize));
+            sb.Append("<script src=\"");
+            sb.Append(dir);
+            if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
+                sb.Append("/");
+            sb.Append(script);
+            sb.AppendLine("\"></script>");
+        }
+        
+        [Obsolete("Use Async variant")]
+        private UploadMappingResults CallUploadMappingsAPI(HttpMethod httpMethod, UploadMappingParams parameters)
+        {
+            return CallUploadMappingsApiAsync(httpMethod, parameters).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
-        public async Task<RawUploadResult> UploadAsync(RawUploadParams parameters, string type = "auto")
+        private async Task<UploadMappingResults> CallUploadMappingsApiAsync(HttpMethod httpMethod, UploadMappingParams parameters)
         {
-            var url = Api.ApiUrlImgUpV.ResourceType(type).BuildUrl();
-            ResetInternalFileDescription(parameters.File, int.MaxValue);
-            using (var response = await Api.CallAsync(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
+            SortedDictionary<string, object> parameters1 = null;
+            string uploadMappingUrl;
+            if (httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put)
             {
-                return RawUploadResult.Parse(response);
+                uploadMappingUrl = GetUploadMappingUrl();
+                if (parameters != null)
+                    parameters1 = parameters.ToParamsDictionary();
+            }
+            else
+            {
+                uploadMappingUrl = GetUploadMappingUrl(parameters);
+            }
+            using (var response = await Api.CallAsync(httpMethod, uploadMappingUrl, parameters1, null, null))
+            {
+                return await UploadMappingResults.Parse(response);
             }
         }
 
-        public async Task<ImageUploadResult> UploadAsync(ImageUploadParams parameters)
+
+        public ArchiveResult CreateArchive(ArchiveParams parameters)
         {
-            var url = Api.ApiUrlImgUpV.BuildUrl();
-            ResetInternalFileDescription(parameters.File, int.MaxValue);
-            using (var response = await Api.CallAsync(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
+            return CreateArchiveAsync(parameters).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        public async Task<ArchiveResult> CreateArchiveAsync(ArchiveParams parameters)
+        {
+            var url1 = Api.ApiUrlV.ResourceType("image").Action("generate_archive");
+            if (!string.IsNullOrEmpty(parameters.ResourceType()))
+                url1.ResourceType(parameters.ResourceType());
+            var url2 = url1.BuildUrl();
+            parameters.Mode(ArchiveCallMode.Create);
+            using (var response = await Api.CallAsync(HttpMethod.Post, url2, parameters.ToParamsDictionary(), null, null))
             {
-                return ImageUploadResult.Parse(response);
+                return  await ArchiveResult.Parse(response);
             }
         }
 
-        public Task<ExplicitResult> ExplicitAsync(ExplicitParams parameters)
+
+        public TransformResult CreateTransform(CreateTransformParams parameters)
         {
-            return CallAsync(Explicit, parameters);
+            return CreateTransformAsync(parameters).Sync();
         }
 
-        public Task<RenameResult> RenameAsync(RenameParams parameters)
+        public async Task<TransformResult> CreateTransformAsync(CreateTransformParams parameters)
         {
-            return CallAsync(Rename, parameters);
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlV.ResourceType("transformations").Add(parameters.Name).BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await TransformResult.Parse(response);
+            }
         }
 
-        public Task<DeletionResult> DestroyAsync(DeletionParams parameters)
+        public UploadMappingResults CreateUploadMapping(string folder, string template)
         {
-            return CallAsync(Destroy, parameters);
+            return CreateUploadMappingAsync(folder,template).Sync();
         }
 
-        public Task<TextResult> TextAsync(TextParams parameters)
+        public Task<UploadMappingResults> CreateUploadMappingAsync(string folder, string template)
         {
-            return CallAsync(Text, parameters);
+            if (string.IsNullOrEmpty(folder))
+                throw new ArgumentException("Folder property must be specified.");
+            if (string.IsNullOrEmpty(template))
+                throw new ArgumentException("Template must be specified.");
+            return CallUploadMappingsApiAsync(HttpMethod.Post, new UploadMappingParams { Folder = folder, Template = template });
         }
 
-        public Task<TagResult> TagAsync(TagParams parameters)
+        public UploadPresetResult CreateUploadPreset(UploadPresetParams parameters)
         {
-            return CallAsync(Tag, parameters);
+            return CreateUploadPresetAsync(parameters).Sync();
         }
 
-        public Task<ListResourcesResult> ListResourcesAsync(ListResourcesParams parameters)
+        public async Task<UploadPresetResult> CreateUploadPresetAsync(UploadPresetParams parameters)
         {
-            return CallAsync(ListResources, parameters);
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlV.Add("upload_presets").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await UploadPresetResult.Parse(response);
+            }
         }
 
-        public Task<ListTagsResult> ListTagsAsync(ListTagsParams parameters)
+        public DelResResult DeleteAllResources()
         {
-            return CallAsync(ListTags, parameters);
+            return DeleteResources(new DelResParams {All = true});
         }
 
-        public Task<ListTransformsResult> ListTransformationsAsync(ListTransformsParams parameters)
+        public DelResResult DeleteAllResources(bool keepOriginal, string nextCursor)
         {
-            return CallAsync(ListTransformations, parameters);
+            return DeleteResources(new DelResParams {All = true, KeepOriginal = keepOriginal, NextCursor = nextCursor});
         }
 
-        public Task<GetTransformResult> GetTransformAsync(GetTransformParams parameters)
+        public DelDerivedResResult DeleteDerivedResources(params string[] ids)
         {
-            return CallAsync(GetTransform, parameters);
+            var parameters = new DelDerivedResParams();
+            parameters.DerivedResources.AddRange(ids);
+            return DeleteDerivedResources(parameters);
         }
 
-        public Task<GetResourceResult> UpdateResourceAsync(UpdateParams parameters)
+        public DelDerivedResResult DeleteDerivedResources(DelDerivedResParams parameters)
         {
-            return CallAsync(UpdateResource, parameters);
+            return DeleteDerivedResourcesAsync(parameters).Sync();
         }
 
-        public Task<GetResourceResult> GetResourceAsync(GetResourceParams parameters)
+        public async Task<DelDerivedResResult> DeleteDerivedResourcesAsync(DelDerivedResParams parameters)
         {
-            return CallAsync(GetResource, parameters);
+            using (var response = await Api.CallAsync(HttpMethod.Delete, new UrlBuilder(Api.ApiUrlV.Add("derived_resources").BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await DelDerivedResResult.Parse(response);
+            }
         }
 
-        public Task<DelDerivedResResult> DeleteDerivedResourcesAsync(DelDerivedResParams parameters)
+        public DelResResult DeleteResources(ResourceType type, params string[] publicIds)
         {
-            return CallAsync(DeleteDerivedResources, parameters);
+            var parameters = new DelResParams {ResourceType = type};
+            parameters.PublicIds.AddRange(publicIds);
+            return DeleteResources(parameters);
+        }
+
+        public DelResResult DeleteResources(params string[] publicIds)
+        {
+            var parameters = new DelResParams();
+            parameters.PublicIds.AddRange(publicIds);
+            return DeleteResources(parameters);
+        }
+
+        public DelResResult DeleteResources(DelResParams parameters)
+        {
+            return DeleteResourcesAsync(parameters).Sync();
         }
 
         public async Task<DelResResult> DeleteResourcesAsync(DelResParams parameters)
         {
             var url = Api.ApiUrlV.Add("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType));
             using (
-                var response = await Api.CallAsync(HttpMethod.DELETE, new UrlBuilder((string.IsNullOrEmpty(parameters.Tag) ? url.Add(parameters.Type) : url.Add("tags").Add(parameters.Tag)).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+                var response = await Api.CallAsync(HttpMethod.Delete,
+                    new UrlBuilder((string.IsNullOrEmpty(parameters.Tag) ? url.Add(parameters.Type) : url.Add("tags").Add(parameters.Tag)).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null,
+                    null, null))
             {
-                return DelResResult.Parse(response);
+                return await DelResResult.Parse(response);
             }
         }
 
-        public Task<UpdateTransformResult> UpdateTransformAsync(UpdateTransformParams parameters)
+        public DelResResult DeleteResourcesByPrefix(string prefix)
         {
-            return CallAsync(UpdateTransform, parameters);
+            return DeleteResources(new DelResParams {Prefix = prefix});
         }
 
-        public Task<TransformResult> CreateTransformAsync(CreateTransformParams parameters)
+        public DelResResult DeleteResourcesByPrefix(string prefix, bool keepOriginal, string nextCursor)
         {
-            return CallAsync(CreateTransform, parameters);
+            return DeleteResources(new DelResParams {Prefix = prefix, KeepOriginal = keepOriginal, NextCursor = nextCursor});
         }
 
-        public Task<SpriteResult> MakeSpriteAsync(SpriteParams parameters)
+        public DelResResult DeleteResourcesByTag(string tag)
         {
-            return CallAsync(MakeSprite, parameters);
+            return DeleteResources(new DelResParams {Tag = tag});
         }
 
-        public Task<MultiResult> MultiAsync(MultiParams parameters)
+        public DelResResult DeleteResourcesByTag(string tag, bool keepOriginal, string nextCursor)
         {
-            return CallAsync(Multi, parameters);
+            return DeleteResources(new DelResParams {Tag = tag, KeepOriginal = keepOriginal, NextCursor = nextCursor});
         }
 
-        public Task<ExplodeResult> ExplodeAsync(ExplodeParams parameters)
+        public TransformResult DeleteTransform(string transformName)
         {
-            return CallAsync(Explode, parameters);
+            return DeleteTransformAsync(transformName).Sync();
         }
 
-        public Task<UsageResult> GetUsageAsync()
+        public async Task<TransformResult> DeleteTransformAsync(string transformName)
         {
-            return Task.Factory.StartNew(GetUsage);
-        }
-
-        private Task<TRes> CallAsync<TParams, TRes>(Func<TParams, TRes> f, TParams @params)
-        {
-            return Task.Factory.StartNew(o => f(@params), @params);
-        }
-
-        public ExplicitResult Explicit(ExplicitParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("explicit").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            using (var response = await Api.CallAsync(HttpMethod.Delete, Api.ApiUrlV.ResourceType("transformations").Add(transformName).BuildUrl(), null, null, null))
             {
-                return ExplicitResult.Parse(response);
+                return await TransformResult.Parse(response);
             }
         }
 
-        public UploadPresetResult CreateUploadPreset(UploadPresetParams parameters)
+        //todo extension method
+        public UploadMappingResults DeleteUploadMapping()
         {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlV.Add("upload_presets").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return UploadPresetResult.Parse(response);
-            }
+            return DeleteUploadMapping(string.Empty);
         }
 
-        public UploadPresetResult UpdateUploadPreset(UploadPresetParams parameters)
+        public UploadMappingResults DeleteUploadMapping(string folder)
         {
-            var paramsDictionary = parameters.ToParamsDictionary();
-            paramsDictionary.Remove("name");
-            using (var response = Api.Call(HttpMethod.PUT, Api.ApiUrlV.Add("upload_presets").Add(parameters.Name).BuildUrl(), paramsDictionary, null, null))
-            {
-                return UploadPresetResult.Parse(response);
-            }
+            return DeleteUploadMappingAsync(folder).Sync();
         }
 
-        public GetUploadPresetResult GetUploadPreset(string name)
+        public async Task<UploadMappingResults> DeleteUploadMappingAsync(string folder)
         {
-            using (var response = Api.Call(HttpMethod.GET, Api.ApiUrlV.Add("upload_presets").Add(name).BuildUrl(), null, null, null))
-            {
-                return GetUploadPresetResult.Parse(response);
-            }
-        }
-
-        public ListUploadPresetsResult ListUploadPresets(string nextCursor = null)
-        {
-            return ListUploadPresets(new ListUploadPresetsParams {NextCursor = nextCursor});
-        }
-
-        public ListUploadPresetsResult ListUploadPresets(ListUploadPresetsParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.GET, new UrlBuilder(Api.ApiUrlV.Add("upload_presets").BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return ListUploadPresetsResult.Parse(response);
-            }
+            var parameters = new UploadMappingParams();
+            if (!string.IsNullOrEmpty(folder))
+                parameters.Folder = folder;
+            return await CallUploadMappingsApiAsync(HttpMethod.Delete, parameters);
         }
 
         public DeleteUploadPresetResult DeleteUploadPreset(string name)
         {
-            using (var response = Api.Call(HttpMethod.DELETE, Api.ApiUrlV.Add("upload_presets").Add(name).BuildUrl(), null, null, null))
+            return DeleteUploadPresetAsync(name).Sync();
+        }
+
+        public async Task<DeleteUploadPresetResult> DeleteUploadPresetAsync(string name)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Delete, Api.ApiUrlV.Add("upload_presets").Add(name).BuildUrl(), null, null, null))
             {
-                return DeleteUploadPresetResult.Parse(response);
+                return await DeleteUploadPresetResult.Parse(response);
             }
         }
 
-        public ImageUploadResult Upload(ImageUploadParams parameters)
+        public DeletionResult Destroy(DeletionParams parameters)
         {
-            var url = Api.ApiUrlImgUpV.BuildUrl();
-            ResetInternalFileDescription(parameters.File, int.MaxValue);
-            using (var response = Api.Call(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
+            return DestroyAsync(parameters).Sync();
+        }
+
+        public async Task<DeletionResult> DestroyAsync(DeletionParams parameters)
+        {
+            using (
+               var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.ResourceType(Api.GetCloudinaryParam(parameters.ResourceType)).Action("destroy").BuildUrl(), parameters.ToParamsDictionary(), null, null))
             {
-                return ImageUploadResult.Parse(response);
+                return await DeletionResult.Parse(response);
             }
         }
 
-        public VideoUploadResult Upload(VideoUploadParams parameters)
+        public string DownloadArchiveUrl(ArchiveParams parameters)
         {
-            var url = Api.ApiUrlVideoUpV.BuildUrl();
-            ResetInternalFileDescription(parameters.File, int.MaxValue);
-            using (var response = Api.Call(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
-            {
-                return VideoUploadResult.Parse(response);
-            }
-        }
-
-        public RawUploadResult Upload(string resourceType, IDictionary<string, object> parameters, FileDescription fileDescription)
-        {
-            var url = Api.ApiUrlV.Action("upload").ResourceType(resourceType).BuildUrl();
-            ResetInternalFileDescription(fileDescription, int.MaxValue);
-            if (parameters == null)
-                parameters = new SortedDictionary<string, object>();
-            if (!(parameters is SortedDictionary<string, object>))
-                parameters = new SortedDictionary<string, object>(parameters);
-            using (var response = Api.Call(HttpMethod.POST, url, (SortedDictionary<string, object>) parameters, fileDescription, null))
-            {
-                return RawUploadResult.Parse(response);
-            }
-        }
-
-        public GetFoldersResult RootFolders()
-        {
-            using (var response = Api.Call(HttpMethod.GET, Api.ApiUrlV.Add("folders").BuildUrl(), null, null, null))
-            {
-                return GetFoldersResult.Parse(response);
-            }
-        }
-
-        public GetFoldersResult SubFolders(string folder)
-        {
-            if (string.IsNullOrEmpty(folder))
-                throw new ArgumentException("folder must be set! Please use RootFolders() to get list of folders in root!");
-            using (var response = Api.Call(HttpMethod.GET, Api.ApiUrlV.Add("folders").Add(folder).BuildUrl(), null, null, null))
-            {
-                return GetFoldersResult.Parse(response);
-            }
+            parameters.Mode(ArchiveCallMode.Download);
+            return GetDownloadUrl(new UrlBuilder(Api.ApiUrlV.ResourceType("image").Action("generate_archive").BuildUrl()), parameters.ToParamsDictionary());
         }
 
         public string DownloadPrivate(string publicId, bool? attachment = null, string format = "", string type = "")
@@ -312,539 +314,30 @@ namespace CloudinaryDotNet
             return GetDownloadUrl(builder, sortedDictionary);
         }
 
-        public UsageResult GetUsage()
+        public ExplicitResult Explicit(ExplicitParams parameters)
         {
-            using (var response = Api.Call(HttpMethod.GET, Api.ApiUrlV.Action("usage").BuildUrl(), null, null, null))
+            return ExplicitAsync(parameters).Sync();
+        }
+
+        public async Task<ExplicitResult> ExplicitAsync(ExplicitParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("explicit").BuildUrl(), parameters.ToParamsDictionary(), null, null))
             {
-                return UsageResult.Parse(response);
-            }
-        }
-
-        public RawUploadResult Upload(RawUploadParams parameters, string type = "auto")
-        {
-            var url = Api.ApiUrlImgUpV.ResourceType(type).BuildUrl();
-            ResetInternalFileDescription(parameters.File, int.MaxValue);
-            using (var response = Api.Call(HttpMethod.POST, url, parameters.ToParamsDictionary(), parameters.File, null))
-            {
-                return RawUploadResult.Parse(response);
-            }
-        }
-
-        public RawUploadResult UploadLargeRaw(BasicRawUploadParams parameters, int bufferSize = 20971520)
-        {
-            if (parameters is RawUploadParams)
-                throw new ArgumentException("Please use BasicRawUploadParams class for large raw file uploading!");
-            parameters.Check();
-            if (parameters.File.IsRemote)
-                throw new ArgumentException("The UploadLargeRaw method is intended to be used for large local file uploading and can't be used for remote file uploading!");
-            return UploadLarge(parameters, bufferSize, true) as RawUploadResult;
-        }
-
-        private string RandomPublicId()
-        {
-            var buffer = new byte[8];
-            m_random.NextBytes(buffer);
-            return string.Concat(buffer.Select(x => x.ToString("X2")).ToArray());
-        }
-
-        public RawUploadResult UploadLarge(RawUploadParams parameters, int bufferSize = 20971520)
-        {
-            return UploadLarge<RawUploadResult>(parameters, bufferSize);
-        }
-
-        public ImageUploadResult UploadLarge(ImageUploadParams parameters, int bufferSize = 20971520)
-        {
-            return UploadLarge<ImageUploadResult>(parameters, bufferSize);
-        }
-
-        public VideoUploadResult UploadLarge(VideoUploadParams parameters, int bufferSize = 20971520)
-        {
-            return UploadLarge<VideoUploadResult>(parameters, bufferSize);
-        }
-
-        [Obsolete("Use UploadLarge(parameters, bufferSize) instead.")]
-        public UploadResult UploadLarge(BasicRawUploadParams parameters, int bufferSize = 20971520, bool isRaw = false)
-        {
-            if (isRaw)
-                return UploadLarge<RawUploadResult>(parameters, bufferSize);
-            return UploadLarge<ImageUploadResult>(parameters, bufferSize);
-        }
-
-        public T UploadLarge<T>(BasicRawUploadParams parameters, int bufferSize = 20971520) where T : UploadResult, new()
-        {
-            var apiUrlImgUpV = Api.ApiUrlImgUpV;
-            apiUrlImgUpV.ResourceType(Enum.GetName(typeof(ResourceType), parameters.ResourceType).ToLower());
-            var url = apiUrlImgUpV.BuildUrl();
-            ResetInternalFileDescription(parameters.File, bufferSize);
-            var extraHeaders = new Dictionary<string, string>();
-            extraHeaders["X-Unique-Upload-Id"] = RandomPublicId();
-            parameters.File.BufferLength = bufferSize;
-            var fileLength = parameters.File.GetFileLength();
-            var obj = default(T);
-            while (!parameters.File.EOF)
-            {
-                var num = Math.Min(bufferSize, fileLength - parameters.File.BytesSent);
-                var paramsDictionary = parameters.ToParamsDictionary();
-                var str = string.Format("bytes {0}-{1}/{2}", parameters.File.BytesSent, parameters.File.BytesSent + num - 1L, fileLength);
-                extraHeaders["Content-Range"] = str;
-                using (var response = Api.Call(HttpMethod.POST, url, paramsDictionary, parameters.File, extraHeaders))
-                {
-                    obj = BaseResult.Parse<T>(response);
-                    if (obj.StatusCode != HttpStatusCode.OK)
-                        throw new WebException(string.Format("An error has occured while uploading file (status code: {0}). {1}", obj.StatusCode,
-                            obj.Error != null ? obj.Error.Message : "Unknown error"));
-                }
-            }
-            return obj;
-        }
-
-        public RenameResult Rename(string fromPublicId, string toPublicId, bool overwrite = false)
-        {
-            return Rename(new RenameParams(fromPublicId, toPublicId) {Overwrite = overwrite});
-        }
-
-        public RenameResult Rename(RenameParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("rename").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return RenameResult.Parse(response);
-            }
-        }
-
-        public DeletionResult Destroy(DeletionParams parameters)
-        {
-            using (
-                var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.ResourceType(Api.GetCloudinaryParam(parameters.ResourceType)).Action("destroy").BuildUrl(), parameters.ToParamsDictionary(),
-                    null, null))
-            {
-                return DeletionResult.Parse(response);
-            }
-        }
-
-        public TextResult Text(string text)
-        {
-            return Text(new TextParams(text));
-        }
-
-        public TextResult Text(TextParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("text").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return TextResult.Parse(response);
-            }
-        }
-
-        public TagResult Tag(TagParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("tags").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return TagResult.Parse(response);
-            }
-        }
-
-        public ListResourceTypesResult ListResourceTypes()
-        {
-            using (var response = Api.Call(HttpMethod.GET, Api.ApiUrlV.Add("resources").BuildUrl(), null, null, null))
-            {
-                return ListResourceTypesResult.Parse(response);
-            }
-        }
-
-        public ListResourcesResult ListResources(string nextCursor = null, bool tags = true, bool context = true, bool moderations = true)
-        {
-            return ListResources(new ListResourcesParams {NextCursor = nextCursor, Tags = tags, Context = context, Moderations = moderations});
-        }
-
-        public ListResourcesResult ListResourcesByType(string type, string nextCursor = null)
-        {
-            return ListResources(new ListResourcesParams {Type = type, NextCursor = nextCursor});
-        }
-
-        public ListResourcesResult ListResourcesByPrefix(string prefix, string type = "upload", string nextCursor = null)
-        {
-            var resourcesByPrefixParams = new ListResourcesByPrefixParams();
-            resourcesByPrefixParams.Type = type;
-            resourcesByPrefixParams.Prefix = prefix;
-            resourcesByPrefixParams.NextCursor = nextCursor;
-            return ListResources(resourcesByPrefixParams);
-        }
-
-        public ListResourcesResult ListResourcesByPrefix(string prefix, bool tags, bool context, bool moderations, string type = "upload", string nextCursor = null)
-        {
-            var resourcesByPrefixParams = new ListResourcesByPrefixParams();
-            resourcesByPrefixParams.Tags = tags;
-            resourcesByPrefixParams.Context = context;
-            resourcesByPrefixParams.Moderations = moderations;
-            resourcesByPrefixParams.Type = type;
-            resourcesByPrefixParams.Prefix = prefix;
-            resourcesByPrefixParams.NextCursor = nextCursor;
-            return ListResources(resourcesByPrefixParams);
-        }
-
-        public ListResourcesResult ListResourcesByTag(string tag, string nextCursor = null)
-        {
-            var resourcesByTagParams = new ListResourcesByTagParams();
-            resourcesByTagParams.Tag = tag;
-            resourcesByTagParams.NextCursor = nextCursor;
-            return ListResources(resourcesByTagParams);
-        }
-
-        public ListResourcesResult ListResourcesByPublicIds(IEnumerable<string> publicIds)
-        {
-            return ListResources(new ListSpecificResourcesParams {PublicIds = new List<string>(publicIds)});
-        }
-
-        public ListResourcesResult ListResourceByPublicIds(IEnumerable<string> publicIds, bool tags, bool context, bool moderations)
-        {
-            var specificResourcesParams = new ListSpecificResourcesParams();
-            specificResourcesParams.PublicIds = new List<string>(publicIds);
-            specificResourcesParams.Tags = tags;
-            specificResourcesParams.Context = context;
-            specificResourcesParams.Moderations = moderations;
-            return ListResources(specificResourcesParams);
-        }
-
-        public ListResourcesResult ListResourcesByModerationStatus(string kind, ModerationStatus status, bool tags = true, bool context = true, bool moderations = true, string nextCursor = null)
-        {
-            var moderationParams = new ListResourcesByModerationParams();
-            moderationParams.ModerationKind = kind;
-            moderationParams.ModerationStatus = status;
-            moderationParams.Tags = tags;
-            moderationParams.Context = context;
-            moderationParams.Moderations = moderations;
-            moderationParams.NextCursor = nextCursor;
-            return ListResources(moderationParams);
-        }
-
-        public ListResourcesResult ListResources(ListResourcesParams parameters)
-        {
-            var url = Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType));
-            if (parameters is ListResourcesByTagParams)
-            {
-                var resourcesByTagParams = (ListResourcesByTagParams) parameters;
-                if (!string.IsNullOrEmpty(resourcesByTagParams.Tag))
-                    url.Add("tags").Add(resourcesByTagParams.Tag);
-            }
-            if (parameters is ListResourcesByModerationParams)
-            {
-                var moderationParams = (ListResourcesByModerationParams) parameters;
-                if (!string.IsNullOrEmpty(moderationParams.ModerationKind))
-                    url.Add("moderations").Add(moderationParams.ModerationKind).Add(Api.GetCloudinaryParam(moderationParams.ModerationStatus));
-            }
-            using (var response = Api.Call(HttpMethod.GET, new UrlBuilder(url.BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return ListResourcesResult.Parse(response);
-            }
-        }
-
-        public ListTagsResult ListTags()
-        {
-            return ListTags(new ListTagsParams());
-        }
-
-        public ListTagsResult ListTagsByPrefix(string prefix)
-        {
-            return ListTags(new ListTagsParams {Prefix = prefix});
-        }
-
-        public ListTagsResult ListTags(ListTagsParams parameters)
-        {
-            using (
-                var response = Api.Call(HttpMethod.GET,
-                    new UrlBuilder(Api.ApiUrlV.ResourceType("tags").Add(Api.GetCloudinaryParam(parameters.ResourceType)).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return ListTagsResult.Parse(response);
-            }
-        }
-
-        public ListTransformsResult ListTransformations()
-        {
-            return ListTransformations(new ListTransformsParams());
-        }
-
-        public ListTransformsResult ListTransformations(ListTransformsParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.GET, new UrlBuilder(Api.ApiUrlV.ResourceType("transformations").BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return ListTransformsResult.Parse(response);
-            }
-        }
-
-        public GetTransformResult GetTransform(string transform)
-        {
-            return GetTransform(new GetTransformParams {Transformation = transform});
-        }
-
-        public GetTransformResult GetTransform(GetTransformParams parameters)
-        {
-            using (
-                var response = Api.Call(HttpMethod.GET,
-                    new UrlBuilder(Api.ApiUrlV.ResourceType("transformations").Add(parameters.Transformation).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return GetTransformResult.Parse(response);
-            }
-        }
-
-        public GetResourceResult UpdateResource(string publicId, ModerationStatus moderationStatus)
-        {
-            return UpdateResource(new UpdateParams(publicId) {ModerationStatus = moderationStatus});
-        }
-
-        public GetResourceResult UpdateResource(UpdateParams parameters)
-        {
-            using (
-                var response = Api.Call(HttpMethod.POST,
-                    Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add(parameters.Type).Add(parameters.PublicId).BuildUrl(), parameters.ToParamsDictionary(),
-                    null, null))
-            {
-                return GetResourceResult.Parse(response);
-            }
-        }
-
-        public GetResourceResult GetResource(string publicId)
-        {
-            return GetResource(new GetResourceParams(publicId));
-        }
-
-        public GetResourceResult GetResource(GetResourceParams parameters)
-        {
-            using (
-                var response = Api.Call(HttpMethod.GET,
-                    new UrlBuilder(Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add(parameters.Type).Add(parameters.PublicId).BuildUrl(),
-                        parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return GetResourceResult.Parse(response);
-            }
-        }
-
-        public DelDerivedResResult DeleteDerivedResources(params string[] ids)
-        {
-            var parameters = new DelDerivedResParams();
-            parameters.DerivedResources.AddRange(ids);
-            return DeleteDerivedResources(parameters);
-        }
-
-        public DelDerivedResResult DeleteDerivedResources(DelDerivedResParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.DELETE, new UrlBuilder(Api.ApiUrlV.Add("derived_resources").BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
-            {
-                return DelDerivedResResult.Parse(response);
-            }
-        }
-
-        public DelResResult DeleteResources(ResourceType type, params string[] publicIds)
-        {
-            var parameters = new DelResParams {ResourceType = type};
-            parameters.PublicIds.AddRange(publicIds);
-            return DeleteResources(parameters);
-        }
-
-        public DelResResult DeleteResources(params string[] publicIds)
-        {
-            var parameters = new DelResParams();
-            parameters.PublicIds.AddRange(publicIds);
-            return DeleteResources(parameters);
-        }
-
-        public DelResResult DeleteResourcesByPrefix(string prefix)
-        {
-            return DeleteResources(new DelResParams {Prefix = prefix});
-        }
-
-        public DelResResult DeleteResourcesByPrefix(string prefix, bool keepOriginal, string nextCursor)
-        {
-            return DeleteResources(new DelResParams {Prefix = prefix, KeepOriginal = keepOriginal, NextCursor = nextCursor});
-        }
-
-        public DelResResult DeleteResourcesByTag(string tag)
-        {
-            return DeleteResources(new DelResParams {Tag = tag});
-        }
-
-        public DelResResult DeleteResourcesByTag(string tag, bool keepOriginal, string nextCursor)
-        {
-            return DeleteResources(new DelResParams {Tag = tag, KeepOriginal = keepOriginal, NextCursor = nextCursor});
-        }
-
-        public DelResResult DeleteAllResources()
-        {
-            return DeleteResources(new DelResParams {All = true});
-        }
-
-        public DelResResult DeleteAllResources(bool keepOriginal, string nextCursor)
-        {
-            return DeleteResources(new DelResParams {All = true, KeepOriginal = keepOriginal, NextCursor = nextCursor});
-        }
-
-        public DelResResult DeleteResources(DelResParams parameters)
-        {
-            var url = Api.ApiUrlV.Add("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType));
-            using (
-                var response = Api.Call(HttpMethod.DELETE,
-                    new UrlBuilder((string.IsNullOrEmpty(parameters.Tag) ? url.Add(parameters.Type) : url.Add("tags").Add(parameters.Tag)).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null,
-                    null, null))
-            {
-                return DelResResult.Parse(response);
-            }
-        }
-
-        public RestoreResult Restore(params string[] publicIds)
-        {
-            var parameters = new RestoreParams();
-            parameters.PublicIds.AddRange(publicIds);
-            return Restore(parameters);
-        }
-
-        public RestoreResult Restore(RestoreParams parameters)
-        {
-            using (
-                var response = Api.Call(HttpMethod.POST, Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add("upload").Add("restore").BuildUrl(),
-                    parameters.ToParamsDictionary(), null, null))
-            {
-                return RestoreResult.Parse(response);
-            }
-        }
-
-        private string GetUploadMappingUrl()
-        {
-            return Api.ApiUrlV.ResourceType("upload_mappings").BuildUrl();
-        }
-
-        private string GetUploadMappingUrl(UploadMappingParams parameters)
-        {
-            return new UrlBuilder(GetUploadMappingUrl(), parameters.ToParamsDictionary()).ToString();
-        }
-
-        private UploadMappingResults CallUploadMappingsAPI(HttpMethod httpMethod, UploadMappingParams parameters)
-        {
-            SortedDictionary<string, object> parameters1 = null;
-            string uploadMappingUrl;
-            if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT)
-            {
-                uploadMappingUrl = GetUploadMappingUrl();
-                if (parameters != null)
-                    parameters1 = parameters.ToParamsDictionary();
-            }
-            else
-            {
-                uploadMappingUrl = GetUploadMappingUrl(parameters);
-            }
-            using (var response = Api.Call(httpMethod, uploadMappingUrl, parameters1, null, null))
-            {
-                return UploadMappingResults.Parse(response);
-            }
-        }
-
-        public UploadMappingResults UploadMappings(UploadMappingParams parameters)
-        {
-            if (parameters == null)
-                parameters = new UploadMappingParams();
-            return CallUploadMappingsAPI(HttpMethod.GET, parameters);
-        }
-
-        public UploadMappingResults UploadMapping(string folder)
-        {
-            if (string.IsNullOrEmpty(folder))
-                throw new ArgumentException("Folder must be specified.");
-            return CallUploadMappingsAPI(HttpMethod.GET, new UploadMappingParams {Folder = folder});
-        }
-
-        public UploadMappingResults CreateUploadMapping(string folder, string template)
-        {
-            if (string.IsNullOrEmpty(folder))
-                throw new ArgumentException("Folder property must be specified.");
-            if (string.IsNullOrEmpty(template))
-                throw new ArgumentException("Template must be specified.");
-            return CallUploadMappingsAPI(HttpMethod.POST, new UploadMappingParams {Folder = folder, Template = template});
-        }
-
-        public UploadMappingResults UpdateUploadMapping(string folder, string newTemplate)
-        {
-            if (string.IsNullOrEmpty(folder))
-                throw new ArgumentException("Folder must be specified.");
-            if (string.IsNullOrEmpty(newTemplate))
-                throw new ArgumentException("New Template name must be specified.");
-            return CallUploadMappingsAPI(HttpMethod.PUT, new UploadMappingParams {Folder = folder, Template = newTemplate});
-        }
-
-        public UploadMappingResults DeleteUploadMapping()
-        {
-            return DeleteUploadMapping(string.Empty);
-        }
-
-        public UploadMappingResults DeleteUploadMapping(string folder)
-        {
-            var parameters = new UploadMappingParams();
-            if (!string.IsNullOrEmpty(folder))
-                parameters.Folder = folder;
-            return CallUploadMappingsAPI(HttpMethod.DELETE, parameters);
-        }
-
-        public UpdateTransformResult UpdateTransform(UpdateTransformParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.PUT, Api.ApiUrlV.ResourceType("transformations").Add(parameters.Transformation).BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return UpdateTransformResult.Parse(response);
-            }
-        }
-
-        public TransformResult CreateTransform(CreateTransformParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlV.ResourceType("transformations").Add(parameters.Name).BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return TransformResult.Parse(response);
-            }
-        }
-
-        public TransformResult DeleteTransform(string transformName)
-        {
-            using (var response = Api.Call(HttpMethod.DELETE, Api.ApiUrlV.ResourceType("transformations").Add(transformName).BuildUrl(), null, null, null))
-            {
-                return TransformResult.Parse(response);
-            }
-        }
-
-        public SpriteResult MakeSprite(SpriteParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("sprite").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return SpriteResult.Parse(response);
-            }
-        }
-
-        public MultiResult Multi(MultiParams parameters)
-        {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("multi").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return MultiResult.Parse(response);
+                return await ExplicitResult.Parse(response);
             }
         }
 
         public ExplodeResult Explode(ExplodeParams parameters)
         {
-            using (var response = Api.Call(HttpMethod.POST, Api.ApiUrlImgUpV.Action("explode").BuildUrl(), parameters.ToParamsDictionary(), null, null))
-            {
-                return ExplodeResult.Parse(response);
-            }
+            return ExplodeAsync(parameters).Sync();
         }
 
-        public ArchiveResult CreateArchive(ArchiveParams parameters)
+        public async Task<ExplodeResult> ExplodeAsync(ExplodeParams parameters)
         {
-            var url1 = Api.ApiUrlV.ResourceType("image").Action("generate_archive");
-            if (!string.IsNullOrEmpty(parameters.ResourceType()))
-                url1.ResourceType(parameters.ResourceType());
-            var url2 = url1.BuildUrl();
-            parameters.Mode(ArchiveCallMode.Create);
-            using (var response = Api.Call(HttpMethod.POST, url2, parameters.ToParamsDictionary(), null, null))
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("explode").BuildUrl(), parameters.ToParamsDictionary(), null, null))
             {
-                return ArchiveResult.Parse(response);
+                return await ExplodeResult.Parse(response);
             }
-        }
-
-        public string DownloadArchiveUrl(ArchiveParams parameters)
-        {
-            parameters.Mode(ArchiveCallMode.Download);
-            return GetDownloadUrl(new UrlBuilder(Api.ApiUrlV.ResourceType("image").Action("generate_archive").BuildUrl()), parameters.ToParamsDictionary());
         }
 
         public IHtmlContent GetCloudinaryJsConfig(bool directUpload = false, string dir = "")
@@ -876,16 +369,6 @@ namespace CloudinaryDotNet
             return new HtmlString(sb.ToString());
         }
 
-        private static void AppendScriptLine(StringBuilder sb, string dir, string script)
-        {
-            sb.Append("<script src=\"");
-            sb.Append(dir);
-            if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
-                sb.Append("/");
-            sb.Append(script);
-            sb.AppendLine("\"></script>");
-        }
-
         private string GetDownloadUrl(UrlBuilder builder, IDictionary<string, object> parameters)
         {
             Api.FinalizeUploadParameters(parameters);
@@ -893,11 +376,606 @@ namespace CloudinaryDotNet
             return builder.ToString();
         }
 
+        public GetResourceResult GetResource(string publicId)
+        {
+            return GetResource(new GetResourceParams(publicId));
+        }
+
+        public GetResourceResult GetResource(GetResourceParams parameters)
+        {
+            return GetResourceAsync(parameters).Sync();
+        }
+
+        public async Task<GetResourceResult> GetResourceAsync(GetResourceParams parameters)
+        {
+            using (
+              var response = await Api.CallAsync(HttpMethod.Get,
+                  new UrlBuilder(Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add(parameters.Type).Add(parameters.PublicId).BuildUrl(),
+                      parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await GetResourceResult.Parse(response);
+            }
+        }
+
+        public GetTransformResult GetTransform(string transform)
+        {
+            return GetTransform(new GetTransformParams {Transformation = transform});
+        }
+
+        public GetTransformResult GetTransform(GetTransformParams parameters)
+        {
+            return GetTransformAsync(parameters).Sync();
+        }
+
+        public async Task<GetTransformResult> GetTransformAsync(GetTransformParams parameters)
+        {
+            using (
+                var response = await Api.CallAsync(HttpMethod.Get,
+                    new UrlBuilder(Api.ApiUrlV.ResourceType("transformations").Add(parameters.Transformation).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await GetTransformResult.Parse(response);
+            }
+        }
+
+        private string GetUploadMappingUrl()
+        {
+            return Api.ApiUrlV.ResourceType("upload_mappings").BuildUrl();
+        }
+
+        private string GetUploadMappingUrl(UploadMappingParams parameters)
+        {
+            return new UrlBuilder(GetUploadMappingUrl(), parameters.ToParamsDictionary()).ToString();
+        }
+
+        public GetUploadPresetResult GetUploadPreset(string name)
+        {
+            return GetUploadPresetAsync(name).Sync();
+        }
+
+        public async Task<GetUploadPresetResult> GetUploadPresetAsync(string name)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Get, Api.ApiUrlV.Add("upload_presets").Add(name).BuildUrl(), null, null, null))
+            {
+                return await GetUploadPresetResult.Parse(response);
+            }
+        }
+
+        public UsageResult GetUsage()
+        {
+            return GetUsageAsync().Sync();
+        }
+
+        public async Task<UsageResult> GetUsageAsync()
+        {
+            using (var response =  await Api.CallAsync(HttpMethod.Get, Api.ApiUrlV.Action("usage").BuildUrl(), null, null, null))
+            {
+                return await UsageResult.Parse(response);
+            }
+        }
+
+        public ListResourcesResult ListResourceByPublicIds(IEnumerable<string> publicIds, bool tags, bool context, bool moderations)
+        {
+            var specificResourcesParams = new ListSpecificResourcesParams();
+            specificResourcesParams.PublicIds = new List<string>(publicIds);
+            specificResourcesParams.Tags = tags;
+            specificResourcesParams.Context = context;
+            specificResourcesParams.Moderations = moderations;
+            return ListResources(specificResourcesParams);
+        }
+
+        public ListResourcesResult ListResources(string nextCursor = null, bool tags = true, bool context = true, bool moderations = true)
+        {
+            return ListResources(new ListResourcesParams {NextCursor = nextCursor, Tags = tags, Context = context, Moderations = moderations});
+        }
+
+        public ListResourcesResult ListResources(ListResourcesParams parameters)
+        {
+            return ListResourcesAsync(parameters).Sync();
+        }
+
+        public async Task<ListResourcesResult> ListResourcesAsync(ListResourcesParams parameters)
+        {
+            var url = Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType));
+            if (parameters is ListResourcesByTagParams)
+            {
+                var resourcesByTagParams = (ListResourcesByTagParams)parameters;
+                if (!string.IsNullOrEmpty(resourcesByTagParams.Tag))
+                    url.Add("tags").Add(resourcesByTagParams.Tag);
+            }
+            if (parameters is ListResourcesByModerationParams)
+            {
+                var moderationParams = (ListResourcesByModerationParams)parameters;
+                if (!string.IsNullOrEmpty(moderationParams.ModerationKind))
+                    url.Add("moderations").Add(moderationParams.ModerationKind).Add(Api.GetCloudinaryParam(moderationParams.ModerationStatus));
+            }
+            using (var response = await Api.CallAsync(HttpMethod.Get, new UrlBuilder(url.BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await ListResourcesResult.Parse(response);
+            }
+        }
+
+        public ListResourcesResult ListResourcesByModerationStatus(string kind, ModerationStatus status, bool tags = true, bool context = true, bool moderations = true, string nextCursor = null)
+        {
+            var moderationParams = new ListResourcesByModerationParams();
+            moderationParams.ModerationKind = kind;
+            moderationParams.ModerationStatus = status;
+            moderationParams.Tags = tags;
+            moderationParams.Context = context;
+            moderationParams.Moderations = moderations;
+            moderationParams.NextCursor = nextCursor;
+            return ListResources(moderationParams);
+        }
+
+        public ListResourcesResult ListResourcesByPrefix(string prefix, string type = "upload", string nextCursor = null)
+        {
+            var resourcesByPrefixParams = new ListResourcesByPrefixParams();
+            resourcesByPrefixParams.Type = type;
+            resourcesByPrefixParams.Prefix = prefix;
+            resourcesByPrefixParams.NextCursor = nextCursor;
+            return ListResources(resourcesByPrefixParams);
+        }
+
+        public ListResourcesResult ListResourcesByPrefix(string prefix, bool tags, bool context, bool moderations, string type = "upload", string nextCursor = null)
+        {
+            var resourcesByPrefixParams = new ListResourcesByPrefixParams();
+            resourcesByPrefixParams.Tags = tags;
+            resourcesByPrefixParams.Context = context;
+            resourcesByPrefixParams.Moderations = moderations;
+            resourcesByPrefixParams.Type = type;
+            resourcesByPrefixParams.Prefix = prefix;
+            resourcesByPrefixParams.NextCursor = nextCursor;
+            return ListResources(resourcesByPrefixParams);
+        }
+
+        public ListResourcesResult ListResourcesByPublicIds(IEnumerable<string> publicIds)
+        {
+            return ListResources(new ListSpecificResourcesParams {PublicIds = new List<string>(publicIds)});
+        }
+
+        public ListResourcesResult ListResourcesByTag(string tag, string nextCursor = null)
+        {
+            var resourcesByTagParams = new ListResourcesByTagParams();
+            resourcesByTagParams.Tag = tag;
+            resourcesByTagParams.NextCursor = nextCursor;
+            return ListResources(resourcesByTagParams);
+        }
+
+        public ListResourcesResult ListResourcesByType(string type, string nextCursor = null)
+        {
+            return ListResources(new ListResourcesParams {Type = type, NextCursor = nextCursor});
+        }
+
+        public ListResourceTypesResult ListResourceTypes()
+        {
+            return ListResourceTypesAsync().Sync();
+        }
+
+        public async Task<ListResourceTypesResult> ListResourceTypesAsync()
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Get, Api.ApiUrlV.Add("resources").BuildUrl(), null, null, null))
+            {
+                return await ListResourceTypesResult.Parse(response);
+            }
+        }
+
+        public ListTagsResult ListTags()
+        {
+            return ListTags(new ListTagsParams());
+        }
+
+        public ListTagsResult ListTags(ListTagsParams parameters)
+        {
+            return ListTagsAsync(parameters).Sync();
+        }
+
+        public async Task<ListTagsResult> ListTagsAsync(ListTagsParams parameters)
+        {
+            using (
+                var response = await Api.CallAsync(HttpMethod.Get,
+                    new UrlBuilder(Api.ApiUrlV.ResourceType("tags").Add(Api.GetCloudinaryParam(parameters.ResourceType)).BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await ListTagsResult.Parse(response);
+            }
+        }
+
+        public ListTagsResult ListTagsByPrefix(string prefix)
+        {
+            return ListTags(new ListTagsParams {Prefix = prefix});
+        }
+
+        public ListTransformsResult ListTransformations()
+        {
+            return ListTransformations(new ListTransformsParams());
+        }
+
+        public ListTransformsResult ListTransformations(ListTransformsParams parameters)
+        {
+            return ListTransformationsAsync(parameters).Sync();
+        }
+
+        public async Task<ListTransformsResult> ListTransformationsAsync(ListTransformsParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Get, new UrlBuilder(Api.ApiUrlV.ResourceType("transformations").BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await ListTransformsResult.Parse(response);
+            }
+        }
+
+        public ListUploadPresetsResult ListUploadPresets(string nextCursor = null)
+        {
+            return ListUploadPresets(new ListUploadPresetsParams {NextCursor = nextCursor});
+        }
+
+        public ListUploadPresetsResult ListUploadPresets(ListUploadPresetsParams parameters)
+        {
+            return ListUploadPresetsAsync(parameters).Sync();
+        }
+
+        public async Task<ListUploadPresetsResult> ListUploadPresetsAsync(ListUploadPresetsParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Get, new UrlBuilder(Api.ApiUrlV.Add("upload_presets").BuildUrl(), parameters.ToParamsDictionary()).ToString(), null, null, null))
+            {
+                return await ListUploadPresetsResult.Parse(response);
+            }
+        }
+
+
+        public SpriteResult MakeSprite(SpriteParams parameters)
+        {
+            return MakeSpriteAsync(parameters).Sync();
+        }
+
+        public async Task<SpriteResult> MakeSpriteAsync(SpriteParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("sprite").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await SpriteResult.Parse(response);
+            }
+        }
+
+        public MultiResult Multi(MultiParams parameters)
+        {
+            return MultiAsync(parameters).Sync();
+        }
+
+        public async Task<MultiResult> MultiAsync(MultiParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("multi").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await MultiResult.Parse(response);
+            }
+        }
+
+        private string RandomPublicId()
+        {
+            var buffer = new byte[8];
+            m_random.NextBytes(buffer);
+            return string.Concat(buffer.Select(x => x.ToString("X2")).ToArray());
+        }
+
+        //Todo extension metohd
+        public RenameResult Rename(string fromPublicId, string toPublicId, bool overwrite = false)
+        {
+            return Rename(new RenameParams(fromPublicId, toPublicId) {Overwrite = overwrite});
+        }
+
+        public RenameResult Rename(RenameParams parameters)
+        {
+            return RenameAsync(parameters).Sync();
+        }
+
+        public async Task<RenameResult> RenameAsync(RenameParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("rename").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await RenameResult.Parse(response);
+            }
+        }
+
         private static void ResetInternalFileDescription(FileDescription file, int bufferSize = 2147483647)
         {
             file.BufferLength = bufferSize;
             file.EOF = false;
             file.BytesSent = 0;
+        }
+
+        public RestoreResult Restore(params string[] publicIds)
+        {
+            var parameters = new RestoreParams();
+            parameters.PublicIds.AddRange(publicIds);
+            return Restore(parameters);
+        }
+
+        public RestoreResult Restore(RestoreParams parameters)
+        {
+            return RestoreAsync(parameters).Sync();
+        }
+
+        public async Task<RestoreResult> RestoreAsync(RestoreParams parameters)
+        {
+            using (
+                var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add("upload").Add("restore").BuildUrl(),
+                    parameters.ToParamsDictionary(), null, null))
+            {
+                return await RestoreResult.Parse(response);
+            }
+        }
+
+        public GetFoldersResult RootFolders()
+        {
+            return RootFoldersAsync().Sync();
+        }
+
+
+        public async Task<GetFoldersResult> RootFoldersAsync()
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Get, Api.ApiUrlV.Add("folders").BuildUrl(), null, null, null))
+            {
+                return await GetFoldersResult.Parse(response);
+            }
+        }
+
+        public GetFoldersResult SubFolders(string folder)
+        {
+            return SubFoldersAsync(folder).Sync();
+        }
+
+        public async Task<GetFoldersResult> SubFoldersAsync(string folder)
+        {
+            if (string.IsNullOrEmpty(folder))
+                throw new ArgumentException("folder must be set! Please use RootFolders() to get list of folders in root!");
+            using (var response = await Api.CallAsync(HttpMethod.Get, Api.ApiUrlV.Add("folders").Add(folder).BuildUrl(), null, null, null))
+            {
+                return await GetFoldersResult.Parse(response);
+            }
+        }
+
+
+        public TagResult Tag(TagParams parameters)
+        {
+            return TagAsync(parameters).Sync();
+        }
+
+        public async Task<TagResult> TagAsync(TagParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("tags").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await TagResult.Parse(response);
+            }
+        }
+
+        //todo extension method
+        public TextResult Text(string text)
+        {
+            return Text(new TextParams(text));
+        }
+
+        public TextResult Text(TextParams parameters)
+        {
+            return TextAsync(parameters).Sync();
+        }
+
+        public async Task<TextResult> TextAsync(TextParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Post, Api.ApiUrlImgUpV.Action("text").BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await TextResult.Parse(response);
+            }
+        }
+
+        public GetResourceResult UpdateResource(string publicId, ModerationStatus moderationStatus)
+        {
+            return UpdateResource(new UpdateParams(publicId) {ModerationStatus = moderationStatus});
+        }
+
+        public GetResourceResult UpdateResource(UpdateParams parameters)
+        {
+            return UpdateResourceAsync(parameters).Sync();
+        }
+
+        //todo extensoin method
+        public async Task<GetResourceResult> UpdateResourceAsync(UpdateParams parameters)
+        {
+            var url = Api.ApiUrlV.ResourceType("resources").Add(Api.GetCloudinaryParam(parameters.ResourceType)).Add(parameters.Type).Add(parameters.PublicId).BuildUrl();
+            using (var response = await Api.CallAsync(HttpMethod.Post,url, parameters.ToParamsDictionary(),null, null))
+            {
+                return await GetResourceResult.Parse(response);
+            }
+        }
+
+        public UpdateTransformResult UpdateTransform(UpdateTransformParams parameters)
+        {
+            return UpdateTransformAsync(parameters).Sync();
+        }
+
+        public async Task<UpdateTransformResult> UpdateTransformAsync(UpdateTransformParams parameters)
+        {
+            using (var response = await Api.CallAsync(HttpMethod.Put, Api.ApiUrlV.ResourceType("transformations").Add(parameters.Transformation).BuildUrl(), parameters.ToParamsDictionary(), null, null))
+            {
+                return await UpdateTransformResult.Parse(response);
+            }
+        }
+
+        public UploadMappingResults UpdateUploadMapping(string folder, string newTemplate)
+        {
+            return UpdateUploadMappingAsync(folder, newTemplate).Sync();
+        }
+
+        public async Task<UploadMappingResults> UpdateUploadMappingAsync(string folder, string newTemplate)
+        {
+            if (string.IsNullOrEmpty(folder))
+                throw new ArgumentException("Folder must be specified.");
+            if (string.IsNullOrEmpty(newTemplate))
+                throw new ArgumentException("New Template name must be specified.");
+            return await CallUploadMappingsApiAsync(HttpMethod.Put, new UploadMappingParams { Folder = folder, Template = newTemplate });
+        }
+
+        public UploadPresetResult UpdateUploadPreset(UploadPresetParams parameters)
+        {
+            return UpdateUploadPresetAsync(parameters).Sync();
+        }
+
+        public async Task<UploadPresetResult> UpdateUploadPresetAsync(UploadPresetParams parameters)
+        {
+            var paramsDictionary = parameters.ToParamsDictionary();
+            paramsDictionary.Remove("name");
+            using (var response = await Api.CallAsync(HttpMethod.Put, Api.ApiUrlV.Add("upload_presets").Add(parameters.Name).BuildUrl(), paramsDictionary, null, null))
+            {
+                return await UploadPresetResult.Parse(response);
+            }
+        }
+
+        public ImageUploadResult Upload(ImageUploadParams parameters)
+        {
+            return UploadAsync(parameters).Sync();
+        }
+
+        public VideoUploadResult Upload(VideoUploadParams parameters)
+        {
+            return UploadAsync(parameters).Sync();
+        }
+
+        public RawUploadResult Upload(string resourceType, IDictionary<string, object> parameters, FileDescription fileDescription)
+        {
+            return UploadAsync(resourceType, parameters, fileDescription).Sync();
+        }
+
+        public async Task<RawUploadResult> UploadAsync(string resourceType, IDictionary<string, object> parameters, FileDescription fileDescription)
+        {
+            var url = Api.ApiUrlV.Action("upload").ResourceType(resourceType).BuildUrl();
+            ResetInternalFileDescription(fileDescription, int.MaxValue);
+            if (parameters == null)
+                parameters = new SortedDictionary<string, object>();
+            if (!(parameters is SortedDictionary<string, object>))
+                parameters = new SortedDictionary<string, object>(parameters);
+            using (var response = await Api.CallAsync(HttpMethod.Post, url, (SortedDictionary<string, object>)parameters, fileDescription, null))
+            {
+                return await RawUploadResult.Parse(response);
+            }
+        }
+
+        public RawUploadResult Upload(RawUploadParams parameters, string type = "auto")
+        {
+            return UploadAsync(parameters, type).Sync();
+        }
+
+        public async Task<RawUploadResult> UploadAsync(RawUploadParams parameters, string type = "auto")
+        {
+            var url = Api.ApiUrlImgUpV.ResourceType(type).BuildUrl();
+            ResetInternalFileDescription(parameters.File, int.MaxValue);
+            using (var response = await Api.CallAsync(HttpMethod.Post, url, parameters.ToParamsDictionary(), parameters.File, null))
+            {
+                return await RawUploadResult.Parse(response);
+            }
+        }
+
+        public async Task<VideoUploadResult> UploadAsync(VideoUploadParams parameters)
+        {
+            var url = Api.ApiUrlVideoUpV.BuildUrl();
+            ResetInternalFileDescription(parameters.File, int.MaxValue);
+            using (var response = await Api.CallAsync(HttpMethod.Post, url, parameters.ToParamsDictionary(), parameters.File, null))
+            {
+                return await VideoUploadResult.Parse(response);
+            }
+        }
+
+        public async Task<ImageUploadResult> UploadAsync(ImageUploadParams parameters)
+        {
+            var url = Api.ApiUrlImgUpV.BuildUrl();
+            ResetInternalFileDescription(parameters.File, int.MaxValue);
+            using (var response = await Api.CallAsync(HttpMethod.Post, url, parameters.ToParamsDictionary(), parameters.File, null))
+            {
+                return await ImageUploadResult.Parse(response);
+            }
+        }
+
+        public RawUploadResult UploadLarge(RawUploadParams parameters, int bufferSize = 20971520)
+        {
+            return UploadLarge<RawUploadResult>(parameters, bufferSize);
+        }
+
+        public ImageUploadResult UploadLarge(ImageUploadParams parameters, int bufferSize = 20971520)
+        {
+            return UploadLarge<ImageUploadResult>(parameters, bufferSize);
+        }
+
+        public VideoUploadResult UploadLarge(VideoUploadParams parameters, int bufferSize = 20971520)
+        {
+            return UploadLarge<VideoUploadResult>(parameters, bufferSize);
+        }
+
+        [Obsolete("Use UploadLarge(parameters, bufferSize) instead.")]
+        public UploadResult UploadLarge(BasicRawUploadParams parameters, int bufferSize = 20971520, bool isRaw = false)
+        {
+            if (isRaw)
+                return UploadLarge<RawUploadResult>(parameters, bufferSize);
+            return UploadLarge<ImageUploadResult>(parameters, bufferSize);
+        }
+
+        public T UploadLarge<T>(BasicRawUploadParams parameters, int bufferSize = 20971520) where T : UploadResult, new()
+        {
+            return UploadLargeAsync<T>(parameters, bufferSize).Sync();
+        }
+
+        public async Task<T> UploadLargeAsync<T>(BasicRawUploadParams parameters, int bufferSize = 20971520) where T : UploadResult, new()
+        {
+            var apiUrlImgUpV = Api.ApiUrlImgUpV;
+            apiUrlImgUpV.ResourceType(Enum.GetName(typeof(ResourceType), parameters.ResourceType).ToLower());
+            var url = apiUrlImgUpV.BuildUrl();
+            ResetInternalFileDescription(parameters.File, bufferSize);
+            var extraHeaders = new Dictionary<string, string>();
+            extraHeaders["X-Unique-Upload-Id"] = RandomPublicId();
+            parameters.File.BufferLength = bufferSize;
+            var fileLength = parameters.File.GetFileLength();
+            var obj = default(T);
+            while (!parameters.File.EOF)
+            {
+                var num = Math.Min(bufferSize, fileLength - parameters.File.BytesSent);
+                var paramsDictionary = parameters.ToParamsDictionary();
+                var str = string.Format("bytes {0}-{1}/{2}", parameters.File.BytesSent, parameters.File.BytesSent + num - 1L, fileLength);
+                extraHeaders["Content-Range"] = str;
+                using (var response = await Api.CallAsync(HttpMethod.Post, url, paramsDictionary, parameters.File, extraHeaders))
+                {
+                    obj = await BaseResult.Parse<T>(response);
+                    if (obj.StatusCode != HttpStatusCode.OK)
+                        throw new CloudinaryException($"An error has occured while uploading file (status code: {obj.StatusCode}). {obj.Error?.Message ?? "Unkown error"}");
+                }
+            }
+            return obj;
+        }
+
+
+        public RawUploadResult UploadLargeRaw(BasicRawUploadParams parameters, int bufferSize = 20971520)
+        {
+            if (parameters is RawUploadParams)
+                throw new ArgumentException("Please use BasicRawUploadParams class for large raw file uploading!");
+            parameters.Check();
+            if (parameters.File.IsRemote)
+                throw new ArgumentException("The UploadLargeRaw method is intended to be used for large local file uploading and can't be used for remote file uploading!");
+            return UploadLarge(parameters, bufferSize, true) as RawUploadResult;
+        }
+
+        public Task<RawUploadResult> UploadLargeRawAsync(BasicRawUploadParams parameters, int bufferSize = 20971520)
+        {
+            return Task.Factory.StartNew(o =>
+            {
+                var tuple = (Tuple<BasicRawUploadParams, int>) o;
+                return UploadLargeRaw(tuple.Item1, tuple.Item2);
+            }, new Tuple<BasicRawUploadParams, int>(parameters, bufferSize));
+        }
+
+        public UploadMappingResults UploadMapping(string folder)
+        {
+            if (string.IsNullOrEmpty(folder))
+                throw new ArgumentException("Folder must be specified.");
+            return CallUploadMappingsAPI(HttpMethod.Get, new UploadMappingParams {Folder = folder});
+        }
+
+        public UploadMappingResults UploadMappings(UploadMappingParams parameters)
+        {
+            if (parameters == null)
+                parameters = new UploadMappingParams();
+            return CallUploadMappingsAPI(HttpMethod.Get, parameters);
         }
     }
 }

@@ -5,9 +5,11 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System;
-using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -29,33 +31,30 @@ namespace CloudinaryDotNet.Actions
 
         public DateTime Reset { get; protected set; }
 
-        internal static T Parse<T>(HttpWebResponse response) where T : BaseResult, new()
+        internal static async Task<T> Parse<T>(HttpResponseMessage response) where T : BaseResult, new()
         {
             if (response == null)
-                throw new ArgumentNullException("response");
+                throw new ArgumentNullException(nameof(response));
             var obj = Activator.CreateInstance<T>();
-            using (var responseStream = response.GetResponseStream())
-            {
-                using (var streamReader = new StreamReader(responseStream))
-                {
-                    var end = streamReader.ReadToEnd();
-                    obj = JsonConvert.DeserializeObject<T>(end);
-                    obj.JsonObj = JToken.Parse(end);
-                }
-            }
+            var end = await response.Content.ReadAsStringAsync();
+            obj = JsonConvert.DeserializeObject<T>(end);
+            obj.JsonObj = JToken.Parse(end);
             if (response.Headers != null)
-                foreach (var allKey in response.Headers.AllKeys)
+                foreach (var header in response.Headers)
+                {
+                    var allKey = header.Key;
                     if (allKey.StartsWith("X-FeatureRateLimit"))
                     {
                         long result1;
-                        if (allKey.EndsWith("Limit") && long.TryParse(response.Headers[allKey], out result1))
+                        if (allKey.EndsWith("Limit") && long.TryParse(header.Value.FirstOrDefault(), out result1))
                             obj.Limit = result1;
-                        if (allKey.EndsWith("Remaining") && long.TryParse(response.Headers[allKey], out result1))
+                        if (allKey.EndsWith("Remaining") && long.TryParse(header.Value.FirstOrDefault(), out result1))
                             obj.Remaining = result1;
                         DateTime result2;
-                        if (allKey.EndsWith("Reset") && DateTime.TryParse(response.Headers[allKey], out result2))
+                        if (allKey.EndsWith("Reset") && DateTime.TryParse(header.Value.FirstOrDefault(), out result2))
                             obj.Reset = result2;
                     }
+                }
             obj.StatusCode = response.StatusCode;
             return obj;
         }

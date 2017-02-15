@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace CloudinaryDotNet.Actions
@@ -90,7 +91,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "info")]
         public Info Info { get; protected set; }
 
-        internal static GetResourceResult Parse(HttpWebResponse response)
+        internal static Task<GetResourceResult> Parse(HttpResponseMessage response)
         {
             return Parse<GetResourceResult>(response);
         }

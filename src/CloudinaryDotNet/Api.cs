@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -31,7 +32,7 @@ namespace CloudinaryDotNet
         public int ChunkSize = 65000;
         public bool CSubDomain;
         public string PrivateCdn;
-        public Func<string, HttpWebRequest> RequestBuilder = x => WebRequest.Create(x) as HttpWebRequest;
+        //public Func<string, HttpWebRequest> RequestBuilder = x => WebRequest.Create(x) as HttpWebRequest;
         public bool ShortenUrl;
         public string Suffix;
         public int Timeout;
@@ -169,39 +170,46 @@ namespace CloudinaryDotNet
             return default(T);
         }
 
-        public HttpWebResponse Call(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
+        [Obsolete("Use call async")]
+        public HttpResponseMessage Call(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
         {
             return CallAsync(method, url, parameters, file, extraHeaders).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
-        public async Task<HttpWebResponse> CallAsync(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
+        public async Task<HttpResponseMessage> CallAsync(HttpMethod method, string url, SortedDictionary<string, object> parameters, FileDescription file, Dictionary<string, string> extraHeaders = null)
         {
-            var httpWebRequest = RequestBuilder(url); //Todo migration to http client   
-            httpWebRequest.Method = Enum.GetName(typeof(HttpMethod), method);
-            httpWebRequest.Headers["User-Agent"] = string.IsNullOrEmpty(UserPlatform) ? USER_AGENT : string.Format("{0} {1}", UserPlatform, USER_AGENT);
-            //if (this.Timeout > 0)
-            //  httpWebRequest.Timeout = this.Timeout;
-            var bytes = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", Account.ApiKey, Account.ApiSecret));
-            httpWebRequest.Headers["Authorization"] = string.Format("Basic {0}", Convert.ToBase64String(bytes));
-            if (extraHeaders != null)
-                foreach (var extraHeader in extraHeaders)
-                    httpWebRequest.Headers[extraHeader.Key] = extraHeader.Value;
-            if (method != HttpMethod.POST)
-                if (method != HttpMethod.PUT)
-                    goto label_40;
-            if (parameters != null)
+            using (var stream = new MemoryStream())
             {
-                //  httpWebRequest.AllowWriteStreamBuffering = false;
-                // httpWebRequest.AllowAutoRedirect = false;
-                // if (this.UseChunkedEncoding)
-                //   httpWebRequest.SendChunked = true;
-                httpWebRequest.ContentType = "multipart/form-data; boundary=notrandomsequencetouseasboundary";
-                if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
-                    FinalizeUploadParameters(parameters);
-                using (var requestStream = await httpWebRequest.GetRequestStreamAsync() /*aiai*/)
+
+
+                var bytes = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", Account.ApiKey, Account.ApiSecret));
+                using (var client = new HttpClient()
                 {
-                    using (var writer = new StreamWriter(requestStream))
+                    DefaultRequestHeaders =
                     {
+                        { "User-Agent", string.IsNullOrEmpty(UserPlatform) ? USER_AGENT : string.Format("{0} {1}", UserPlatform, USER_AGENT) },
+                        {"Authorization",  string.Format("Basic {0}", Convert.ToBase64String(bytes))}
+                    }
+                })
+                {
+                    if (this.Timeout > 0)
+                        client.Timeout = TimeSpan.FromMilliseconds(this.Timeout);
+
+                    var content = new StreamContent(stream) { };
+
+                    if (extraHeaders != null)
+                        foreach (var extraHeader in extraHeaders)
+                            content.Headers.Add(extraHeader.Key, extraHeader.Value);
+
+
+
+                    if (parameters != null && (method == HttpMethod.Post || method == HttpMethod.Put))
+                    {
+                        content.Headers.Add("Content-Type", "multipart/form-data; boundary=notrandomsequencetouseasboundary");
+                        if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
+                            FinalizeUploadParameters(parameters);
+
+                        var writer = new StreamWriter(stream);
                         foreach (var parameter in parameters)
                             if (parameter.Value != null)
                                 if (parameter.Value is IEnumerable<string>)
@@ -212,20 +220,22 @@ namespace CloudinaryDotNet
                         if (file != null)
                             WriteFile(writer, file);
                         writer.Write("--{0}--", "notrandomsequencetouseasboundary");
+
+                        writer.Flush();
+                        stream.Position = 0;
+
+                    }
+                    try
+                    {
+                        url = url.Replace("https://", "http://");
+                        return await client.SendAsync(new HttpRequestMessage(method, url) { Content = content });
+                    }
+                    catch (Exception e)
+                    {
+                        throw;
                     }
                 }
-            }
-            label_40:
-            try
-            {
-                return (HttpWebResponse) await httpWebRequest.GetResponseAsync(); /*aiaiai*/;
-            }
-            catch (WebException ex)
-            {
-                var response = ex.Response as HttpWebResponse;
-                if (response != null)
-                    return response;
-                throw;
+
             }
         }
 

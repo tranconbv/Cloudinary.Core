@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -24,9 +25,9 @@ namespace CloudinaryDotNet.Actions
 
         public List<ResponsiveBreakpointList> ResponsiveBreakpoints { get; set; }
 
-        internal static ExplicitResult Parse(HttpWebResponse response)
+        internal static async Task<ExplicitResult> Parse(HttpResponseMessage response)
         {
-            var explicitResult = Parse<ExplicitResult>(response);
+            var explicitResult = await Parse<ExplicitResult>(response);
             if (explicitResult.JsonObj != null)
             {
                 var jtoken = explicitResult.JsonObj["responsive_breakpoints"];

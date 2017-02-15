@@ -1,28 +1,30 @@
 ﻿using System;
-using Xunit;
-using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
 using System.IO;
+using CloudinaryDotNet.Actions;
+using Xunit;
 
-namespace Tests
+namespace Cloudinary.Tests
 {
     public class Tests
     {
-        public Cloudinary Cloudinary { get; set; }
+        public CloudinaryDotNet.Cloudinary Cloudinary { get; set; }
         public Tests()
         {
             if(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CLOUDINARY_URL")))
                 throw new Exception("CLOUDINARY_URL should be set");
 
-            Cloudinary = new Cloudinary();
+            Cloudinary = new CloudinaryDotNet.Cloudinary();
         }
 
         private Stream ReadFile(string path){
             var dir = Directory.GetCurrentDirectory();
+            if (dir.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug"))
+                dir = dir.Substring(0, dir.IndexOf($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug", StringComparison.Ordinal));
             if(!dir.EndsWith("Cloudinary.Tests"))
                 dir = Path.Combine(dir,"src","Cloudinary.Tests");
             return File.Open(Path.Combine(dir, path), FileMode.Open);
         }
+
         [Fact]
         public void TestSample()
         {
@@ -31,7 +33,6 @@ namespace Tests
             Assert.NotNull(getResult);
             Assert.Equal(getResult.PublicId, "sample");
         }
-
 
         [Fact]
         public async void TestUpload(){

@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -17,9 +18,9 @@ namespace CloudinaryDotNet.Actions
 
         public ResourceType[] ResourceTypes { get; protected set; }
 
-        internal static ListResourceTypesResult Parse(HttpWebResponse response)
+        internal static async Task<ListResourceTypesResult> Parse(HttpResponseMessage response)
         {
-            var resourceTypesResult = Parse<ListResourceTypesResult>(response);
+            var resourceTypesResult = await Parse<ListResourceTypesResult>(response);
             var resourceTypeList = new List<ResourceType>();
             foreach (var resourceType in resourceTypesResult.m_resourceTypes)
                 resourceTypeList.Add(Api.ParseCloudinaryParam<ResourceType>(resourceType));

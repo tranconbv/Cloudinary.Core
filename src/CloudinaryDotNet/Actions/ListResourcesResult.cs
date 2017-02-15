@@ -4,8 +4,9 @@
 // MVID: 85795B22-FB3A-4216-BE8E-309002E93AB1
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -18,7 +19,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "next_cursor")]
         public string NextCursor { get; protected set; }
 
-        internal static ListResourcesResult Parse(HttpWebResponse response)
+        internal static Task<ListResourcesResult> Parse(HttpResponseMessage response)
         {
             return Parse<ListResourcesResult>(response);
         }

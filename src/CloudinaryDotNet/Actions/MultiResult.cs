@@ -5,8 +5,9 @@
 // Assembly location: C:\Users\Joel.TRANCON\AppData\Local\Temp\Mudimuk\dbdb731dac\lib\net40\CloudinaryDotNet.dll
 
 using System;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -25,7 +26,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "version")]
         public string Version { get; protected set; }
 
-        internal static MultiResult Parse(HttpWebResponse response)
+        internal static Task<MultiResult> Parse(HttpResponseMessage response)
         {
             return Parse<MultiResult>(response);
         }

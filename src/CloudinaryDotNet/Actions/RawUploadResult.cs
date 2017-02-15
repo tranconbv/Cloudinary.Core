@@ -6,8 +6,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CloudinaryDotNet.Actions
 {
@@ -32,7 +33,7 @@ namespace CloudinaryDotNet.Actions
         [DataMember(Name = "tags")]
         public string[] Tags { get; protected set; }
 
-        internal static RawUploadResult Parse(HttpWebResponse response)
+        internal static Task<RawUploadResult> Parse(HttpResponseMessage response)
         {
             return Parse<RawUploadResult>(response);
         }
