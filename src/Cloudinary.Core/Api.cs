@@ -9,16 +9,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
 
 namespace CloudinaryDotNet
 {
@@ -187,7 +183,7 @@ namespace CloudinaryDotNet
                                     WriteParam(writer, parameter.Key, parameter.Value.ToString());
                         if (file != null)
                             WriteFile(writer, file);
-                        writer.Write("--{0}--", "notrandomsequencetouseasboundary");
+                        writer.Write("--{0}--", HTTP_BOUNDARY);
 
                         writer.Flush();
                         stream.Position = 0;
@@ -199,76 +195,15 @@ namespace CloudinaryDotNet
             }
         }
 
-        public string PrepareUploadParams(IDictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new SortedDictionary<string, object>();
-            if (!(parameters is SortedDictionary<string, object>))
-                parameters = new SortedDictionary<string, object>(parameters);
-            var path = "";
-            if (parameters.ContainsKey("callback"))
-                if (parameters["callback"] != null)
-                    path = parameters["callback"].ToString();
-            try
-            {
-                parameters["callback"] = BuildCallbackUrl(path);
-            }
-            catch (HttpContextNotFoundException)
-            {//todo throw?
-            }
-            if (!parameters.ContainsKey("unsigned") || parameters["unsigned"].ToString() == "false")
-                FinalizeUploadParameters(parameters);
-            return JsonConvert.SerializeObject(parameters);
-        }
 
         public string GetUploadUrl(string resourceType = "auto")
         {
             return ApiUrlV.Action("upload").ResourceType(resourceType).BuildUrl();
         }
 
-        public string BuildCallbackUrl(string path = "")
-        {
-            if (string.IsNullOrEmpty(path))
-                path = "/Content/cloudinary_cors.html";
-            if (Regex.IsMatch(path.ToLower(), "^https?:/.*"))
-                return path;
-            throw new NotImplementedException("Should be implemented with IHttpContextAccessor");
-            //if (HttpContext.Current != null)
-            //  return new Uri(HttpContext.Current.Request.Url, path).ToString();
-            //throw new HttpContextNotFoundException("Http context is not set. Either use this method in the right context or provide an absolute path to file!");
-        }
 
-        public IHtmlContent BuildUnsignedUploadForm(string field, string preset, IDictionary<string, object> parameters = null, IDictionary<string, string> htmlOptions = null)
-        {
-            if (parameters == null)
-                parameters = new SortedDictionary<string, object>();
-            parameters.Add("upload_preset", preset);
-            parameters.Add("unsigned", true);
-            return BuildUploadForm(field, "image", parameters, htmlOptions);
-        }
 
-        public IHtmlContent BuildUploadForm(string field, string resourceType, IDictionary<string, object> parameters = null, IDictionary<string, string> htmlOptions = null)
-        {
-            if (htmlOptions == null)
-                htmlOptions = new Dictionary<string, string>();
-            if (string.IsNullOrEmpty(resourceType))
-                resourceType = "auto";
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append("<input type='file' name='file' data-url='")
-                .Append(GetUploadUrl(resourceType))
-                .Append("' data-form-data='")
-                .Append(PrepareUploadParams(parameters))
-                .Append("' data-cloudinary-field='")
-                .Append(field)
-                .Append("' class='cloudinary-fileupload");
-            if (htmlOptions.ContainsKey("class"))
-                stringBuilder.Append(" ").Append(htmlOptions["class"]);
-            foreach (var htmlOption in htmlOptions)
-                if (htmlOption.Key != "class")
-                    stringBuilder.Append("' ").Append(htmlOption.Key).Append("='").Append(WebUtility.HtmlEncode(htmlOption.Value));
-            stringBuilder.Append("'/>");
-            return new HtmlString(stringBuilder.ToString());
-        }
+
 
         private byte[] ComputeHash(string s)
         {
@@ -283,7 +218,7 @@ namespace CloudinaryDotNet
             return Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString();
         }
 
-        internal void FinalizeUploadParameters(IDictionary<string, object> parameters)
+        public void FinalizeUploadParameters(IDictionary<string, object> parameters)
         {
             parameters.Add("timestamp", GetTime());
             parameters.Add("signature", SignParameters(parameters));
@@ -292,7 +227,7 @@ namespace CloudinaryDotNet
 
         private void WriteParam(StreamWriter writer, string key, string value)
         {
-            WriteLine(writer, "--{0}", "notrandomsequencetouseasboundary");
+            WriteLine(writer, "--{0}", HTTP_BOUNDARY);
             WriteLine(writer, "Content-Disposition: form-data; name=\"{0}\"", key);
             WriteLine(writer);
             WriteLine(writer, value);
@@ -326,7 +261,7 @@ namespace CloudinaryDotNet
 
         private bool WriteFile(StreamWriter writer, Stream stream, int length, string fileName, out int bytesSent)
         {
-            WriteLine(writer, "--{0}", "notrandomsequencetouseasboundary");
+            WriteLine(writer, "--{0}", HTTP_BOUNDARY);
             WriteLine(writer, "Content-Disposition: form-data;  name=\"file\"; filename=\"{0}\"", fileName);
             WriteLine(writer, "Content-Type: application/octet-stream");
             WriteLine(writer);

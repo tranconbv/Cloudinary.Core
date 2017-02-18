@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "Cloudinary.Core" : {
+      "target" : "project"
+    },
+    "Microsoft.AspNetCore.Html.Abstractions": "1.1.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {
+      }
+    }
+  }
+}

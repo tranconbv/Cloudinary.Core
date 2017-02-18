@@ -42,7 +42,7 @@ namespace CloudinaryDotNet.Actions
             RawConvert = preset.Settings.RawConvert;
             if (preset.Settings.Context != null)
             {
-                Context = new StringDictionary();
+                Context = new Dictionary<string, string>();
                 foreach (JProperty jproperty in preset.Settings.Context)
                     Context.Add(jproperty.Name, jproperty.Value.ToString());
             }
@@ -137,7 +137,7 @@ namespace CloudinaryDotNet.Actions
 
         public string RawConvert { get; set; }
 
-        public StringDictionary Context { get; set; }
+        public IDictionary<string, string> Context { get; set; }
 
         public string[] AllowedFormats { get; set; }
 
@@ -219,7 +219,7 @@ namespace CloudinaryDotNet.Actions
             if (AllowedFormats != null)
                 AddParam(paramsDictionary, "allowed_formats", string.Join(",", AllowedFormats));
             if (Context != null && Context.Count > 0)
-                AddParam(paramsDictionary, "context", string.Join("|", Context.Pairs));
+                AddParam(paramsDictionary, "context", Context.ReducePiped());
             return paramsDictionary;
         }
 

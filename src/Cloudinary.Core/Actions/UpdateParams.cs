@@ -28,7 +28,7 @@ namespace CloudinaryDotNet.Actions
 
         public string Tags { get; set; }
 
-        public StringDictionary Context { get; set; }
+        public IDictionary<string, string> Context { get; set; }
 
         public string RawConvert { get; set; }
 
@@ -73,7 +73,7 @@ namespace CloudinaryDotNet.Actions
                 AddParam(paramsDictionary, "auto_tagging", AutoTagging.Value);
             AddParam(paramsDictionary, "raw_convert", RawConvert);
             if (Context != null && Context.Count > 0)
-                AddParam(paramsDictionary, "context", string.Join("|", Context.Pairs));
+                AddParam(paramsDictionary, "context", Context.ReducePiped());
             AddCoordinates(paramsDictionary, "face_coordinates", FaceCoordinates);
             AddCoordinates(paramsDictionary, "custom_coordinates", CustomCoordinates);
             if (Headers != null && Headers.Count > 0)

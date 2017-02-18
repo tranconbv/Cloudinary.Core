@@ -7,46 +7,34 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Html;
 
 namespace CloudinaryDotNet
 {
     public class Url //: ICloneable, lets not even go there: http://stackoverflow.com/a/20386650/1275832
     {
-        private const string CL_BLANK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
-        private static readonly string[] DEFAULT_VIDEO_SOURCE_TYPES = new string[3]
-        {
-            "webm",
-            "mp4",
-            "ogv"
-        };
-
-        private static readonly Regex VIDEO_EXTENSION_RE = new Regex("\\.(" + string.Join("|", DEFAULT_VIDEO_SOURCE_TYPES) + ")$", RegexOptions.Compiled);
         private string m_action = string.Empty;
         private string m_apiVersion;
         private string m_cloudinaryAddr = "res.cloudinary.com";
         private string m_cloudName;
         private string m_cName;
         private List<string> m_customParts = new List<string>();
-        private string m_fallbackContent;
-        private string m_posterSource;
-        private Transformation m_posterTransformation;
-        private Url m_posterUrl;
+        public string m_fallbackContent;
+        public string m_posterSource;
+        public Transformation m_posterTransformation;
+        public Url m_posterUrl;
         private string m_privateCdn;
-        private string m_resourceType = string.Empty;
+        public string m_resourceType = string.Empty;
         private bool m_secure;
         private bool m_shorten;
         private bool m_signed;
         private readonly ISignProvider m_signProvider;
         private string m_source;
-        private Dictionary<string, Transformation> m_sourceTransforms;
-        private string[] m_sourceTypes;
+        public Dictionary<string, Transformation> m_sourceTransforms;
+        public string[] m_sourceTypes;
         private string m_suffix;
-        private Transformation m_transformation;
+        public Transformation m_transformation;
         private bool m_usePrivateCdn;
         private bool m_useRootPath;
         private bool m_useSubDomain;
@@ -253,145 +241,6 @@ namespace CloudinaryDotNet
             return BuildUrl(source);
         }
 
-        public IHtmlContent BuildImageTag(string source, params string[] keyValuePairs)
-        {
-            return BuildImageTag(source, new StringDictionary(keyValuePairs));
-        }
-
-        public IHtmlContent BuildImageTag(string source, StringDictionary dict = null)
-        {
-            if (dict == null)
-                dict = new StringDictionary();
-            var str1 = BuildUrl(source);
-            if (!string.IsNullOrEmpty(Transformation.HtmlWidth))
-                dict.Add("width", Transformation.HtmlWidth);
-            if (!string.IsNullOrEmpty(Transformation.HtmlHeight))
-                dict.Add("height", Transformation.HtmlHeight);
-            if (Transformation.HiDpi || Transformation.IsResponsive)
-            {
-                var str2 = Transformation.IsResponsive ? "cld-responsive" : "cld-hidpi";
-                var str3 = dict["class"];
-                dict["class"] = str3 == null ? str2 : str3 + " " + str2;
-                dict.Add("data-src", str1);
-                var str4 = dict.Remove("responsive_placeholder");
-                if (str4 == "blank")
-                    str4 = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-                str1 = str4;
-            }
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append("<img");
-            if (!string.IsNullOrEmpty(str1))
-                stringBuilder.Append(" src=\"").Append(str1).Append("\"");
-            foreach (var keyValuePair in dict)
-                stringBuilder.Append(" ").Append(keyValuePair.Key).Append("=\"").Append(WebUtility.HtmlEncode(keyValuePair.Value)).Append("\"");
-            stringBuilder.Append("/>");
-            return new HtmlString(stringBuilder.ToString());
-        }
-
-        public IHtmlContent BuildVideoTag(string source, params string[] keyValuePairs)
-        {
-            return BuildVideoTag(source, new StringDictionary(keyValuePairs));
-        }
-
-        public IHtmlContent BuildVideoTag(string source, StringDictionary dict = null)
-        {
-            if (dict == null)
-                dict = new StringDictionary();
-            source = VIDEO_EXTENSION_RE.Replace(source, "", 1);
-            if (string.IsNullOrEmpty(m_resourceType))
-                m_resourceType = "video";
-            var strArray = m_sourceTypes ?? DEFAULT_VIDEO_SOURCE_TYPES;
-            var str1 = FinalizePosterUrl(source);
-            if (!string.IsNullOrEmpty(str1))
-                dict.Add("poster", str1);
-            var sb = new StringBuilder("<video");
-            var flag = strArray.Length > 1;
-            if (!flag)
-            {
-                var str2 = BuildUrl(source + "." + strArray[0]);
-                dict.Add("src", str2);
-            }
-            else
-            {
-                BuildUrl(source);
-            }
-            if (dict.ContainsKey("html_height"))
-                dict["height"] = dict.Remove("html_height");
-            else if (Transformation.HtmlHeight != null)
-                dict["height"] = Transformation.HtmlHeight;
-            if (dict.ContainsKey("html_width"))
-                dict["width"] = dict.Remove("html_width");
-            else if (Transformation.HtmlWidth != null)
-                dict["width"] = Transformation.HtmlWidth;
-            var sort = dict.Sort;
-            dict.Sort = true;
-            foreach (var keyValuePair in dict)
-            {
-                sb.Append(" ").Append(keyValuePair.Key);
-                if (keyValuePair.Value != null)
-                    sb.Append("='").Append(keyValuePair.Value).Append("'");
-            }
-            dict.Sort = sort;
-            sb.Append(">");
-            if (flag)
-                foreach (var sourceType in strArray)
-                    AppendVideoSources(sb, source, sourceType);
-            if (!string.IsNullOrEmpty(m_fallbackContent))
-                sb.Append(m_fallbackContent);
-            sb.Append("</video>");
-            return new HtmlString(sb.ToString());
-        }
-
-        private void AppendVideoSources(StringBuilder sb, string source, string sourceType)
-        {
-            var url = Clone();
-            if (m_sourceTransforms != null)
-            {
-                Transformation transformation1 = null;
-                if (m_sourceTransforms.TryGetValue(sourceType, out transformation1) && transformation1 != null)
-                    if (url.m_transformation == null)
-                    {
-                        url.Transform(transformation1.Clone());
-                    }
-                    else
-                    {
-                        url.m_transformation.Chain();
-                        var transformation2 = transformation1.Clone();
-                        transformation2.NestedTransforms.AddRange(url.m_transformation.NestedTransforms);
-                        url.Transform(transformation2);
-                    }
-            }
-            var str1 = url.Format(sourceType).BuildUrl(source);
-            var str2 = sourceType;
-            if (sourceType.Equals("ogv", StringComparison.OrdinalIgnoreCase))
-                str2 = "ogg";
-            var str3 = "video/" + str2;
-            sb.Append("<source src='").Append(str1).Append("' type='").Append(str3).Append("'>");
-        }
-
-        private string FinalizePosterUrl(string source)
-        {
-            string str = null;
-            if (m_posterUrl != null)
-            {
-                str = m_posterUrl.BuildUrl();
-            }
-            else if (m_posterTransformation != null)
-            {
-                str = Clone().Format("jpg").Transform(m_posterTransformation.Clone()).BuildUrl(source);
-            }
-            else if (m_posterSource != null)
-            {
-                if (!string.IsNullOrEmpty(m_posterSource))
-                    str = Clone().Format("jpg").BuildUrl(m_posterSource);
-            }
-            else
-            {
-                str = Clone().Format("jpg").BuildUrl(source);
-            }
-            return str;
-        }
-
         public string BuildUrl()
         {
             return BuildUrl(null);
@@ -513,19 +362,19 @@ namespace CloudinaryDotNet
                 }
                 else
                 {
-                    if (!(m_resourceType == "raw") || !(m_action == "upload"))
+                    if (m_resourceType != "raw" || m_action != "upload")
                         throw new NotSupportedException("URL Suffix only supported for image/upload and raw/upload!");
                     m_resourceType = "files";
                     m_action = null;
                 }
             if (m_useRootPath)
             {
-                if ((!(m_resourceType == "image") || !(m_action == "upload")) && (!(m_resourceType == "images") || !string.IsNullOrEmpty(m_action)))
+                if ((m_resourceType != "image" || m_action != "upload") && (m_resourceType != "images" || !string.IsNullOrEmpty(m_action)))
                     throw new NotSupportedException("Root path only supported for image/upload!");
                 m_resourceType = string.Empty;
                 m_action = string.Empty;
             }
-            if (!m_shorten || !(m_resourceType == "image") || !(m_action == "upload"))
+            if (!m_shorten || m_resourceType != "image" || m_action != "upload")
                 return;
             m_resourceType = string.Empty;
             m_action = "iu";

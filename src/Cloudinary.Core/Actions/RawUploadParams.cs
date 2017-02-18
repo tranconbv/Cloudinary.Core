@@ -15,7 +15,7 @@ namespace CloudinaryDotNet.Actions
         {
             Overwrite = true;
             UniqueFilename = true;
-            Context = new StringDictionary();
+            Context = new Dictionary<string, string>();
         }
 
         public string Tags { get; set; }
@@ -40,7 +40,7 @@ namespace CloudinaryDotNet.Actions
 
         public string RawConvert { get; set; }
 
-        public StringDictionary Context { get; set; }
+        public IDictionary<string, string> Context { get; set; }
 
         public string[] AllowedFormats { get; set; }
 
@@ -64,7 +64,7 @@ namespace CloudinaryDotNet.Actions
             AddParam(paramsDictionary, "raw_convert", RawConvert);
             AddParam(paramsDictionary, "overwrite", Overwrite);
             if (Context != null && Context.Count > 0)
-                AddParam(paramsDictionary, "context", string.Join("|", Context.Pairs));
+                AddParam(paramsDictionary, "context", Context.ReducePiped());
             if (Headers != null && Headers.Count > 0)
             {
                 var stringBuilder = new StringBuilder();

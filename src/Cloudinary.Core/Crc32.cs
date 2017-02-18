@@ -8,35 +8,38 @@ using System;
 
 namespace CloudinaryDotNet
 {
+    /// <summary>
+    /// Hashing alghorithm to compute checksum
+    /// </summary>
     public static class Crc32
     {
-        private static readonly uint[] table;
+        private static readonly uint[] Table;
+        private const uint Hash = 3988292384;
 
         static Crc32()
         {
-            var num1 = 3988292384;
-            table = new uint[256];
-            for (uint index1 = 0; (long) index1 < (long) table.Length; ++index1)
+            Table = new uint[256];
+            for (uint index1 = 0; (long) index1 < (long) Table.Length; ++index1)
             {
                 var num2 = index1;
                 for (var index2 = 8; index2 > 0; --index2)
                     if (((int) num2 & 1) == 1)
-                        num2 = (num2 >> 1) ^ num1;
+                        num2 = (num2 >> 1) ^ Hash;
                     else
                         num2 >>= 1;
-                table[index1] = num2;
+                Table[index1] = num2;
             }
         }
 
         public static uint ComputeChecksum(byte[] bytes)
         {
-            var num1 = uint.MaxValue;
+            var max = uint.MaxValue;
             for (var index = 0; index < bytes.Length; ++index)
             {
-                var num2 = (byte) ((num1 & byte.MaxValue) ^ bytes[index]);
-                num1 = (num1 >> 8) ^ table[num2];
+                var tableIndex = (byte) ((max & byte.MaxValue) ^ bytes[index]);
+                max = (max >> 8) ^ Table[tableIndex];
             }
-            return ~num1;
+            return ~max;
         }
 
         public static byte[] ComputeChecksumBytes(byte[] bytes)

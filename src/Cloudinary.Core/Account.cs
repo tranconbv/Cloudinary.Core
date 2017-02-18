@@ -8,7 +8,6 @@ using System;
 
 namespace CloudinaryDotNet
 {
-    [Serializable]
     public class Account
     {
         public Account()

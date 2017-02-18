@@ -9,11 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json.Linq;
 
 namespace CloudinaryDotNet
 {
@@ -23,8 +20,6 @@ namespace CloudinaryDotNet
         public const string OLD_AKAMAI_SHARED_CDN = "cloudinary-a.akamaihd.net";
         public const string AKAMAI_SHARED_CDN = "res.cloudinary.com";
         public const string SHARED_CDN = "res.cloudinary.com";
-        private const string RESOURCE_TYPE_IMAGE = "image";
-        private const string ACTION_GENERATE_ARCHIVE = "generate_archive";
         private static readonly Random m_random = new Random();
 
         public Cloudinary()
@@ -44,15 +39,7 @@ namespace CloudinaryDotNet
 
         public Api Api { get; }
 
-        private static void AppendScriptLine(StringBuilder sb, string dir, string script)
-        {
-            sb.Append("<script src=\"");
-            sb.Append(dir);
-            if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
-                sb.Append("/");
-            sb.Append(script);
-            sb.AppendLine("\"></script>");
-        }
+
         
         private async Task<UploadMappingResults> CallUploadMappingsApiAsync(HttpMethod httpMethod, UploadMappingParams parameters)
         {
@@ -227,35 +214,6 @@ namespace CloudinaryDotNet
             {
                 return await ExplodeResult.Parse(response);
             }
-        }
-
-        public IHtmlContent GetCloudinaryJsConfig(bool directUpload = false, string dir = "")
-        {
-            if (string.IsNullOrEmpty(dir))
-                dir = "/Scripts";
-            var sb = new StringBuilder(1000);
-            AppendScriptLine(sb, dir, "jquery.ui.widget.js");
-            AppendScriptLine(sb, dir, "jquery.iframe-transport.js");
-            AppendScriptLine(sb, dir, "jquery.fileupload.js");
-            AppendScriptLine(sb, dir, "jquery.cloudinary.js");
-            if (directUpload)
-            {
-                AppendScriptLine(sb, dir, "canvas-to-blob.min.js");
-                AppendScriptLine(sb, dir, "jquery.fileupload-image.js");
-                AppendScriptLine(sb, dir, "jquery.fileupload-process.js");
-                AppendScriptLine(sb, dir, "jquery.fileupload-validate.js");
-                AppendScriptLine(sb, dir, "load-image.min.js");
-            }
-            var jobject = new JObject(new JProperty("cloud_name", Api.Account.Cloud), new JProperty("api_key", Api.Account.ApiKey), new JProperty("private_cdn", Api.UsePrivateCdn),
-                new JProperty("cdn_subdomain", Api.CSubDomain));
-            if (!string.IsNullOrEmpty(Api.PrivateCdn))
-                jobject.Add("secure_distribution", Api.PrivateCdn);
-            sb.AppendLine("<script type='text/javascript'>");
-            sb.Append("$.cloudinary.config(");
-            sb.Append(jobject);
-            sb.AppendLine(");");
-            sb.AppendLine("</script>");
-            return new HtmlString(sb.ToString());
         }
 
         private string GetDownloadUrl(UrlBuilder builder, IDictionary<string, object> parameters)

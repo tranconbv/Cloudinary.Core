@@ -39,7 +39,7 @@ namespace CloudinaryDotNet.Actions
 
         public object CustomCoordinates { get; set; }
 
-        public StringDictionary Context { get; set; }
+        public IDictionary<string, string> Context { get; set; }
 
         public List<ResponsiveBreakpoint> ResponsiveBreakpoints { get; set; }
 
@@ -65,7 +65,7 @@ namespace CloudinaryDotNet.Actions
             if (EagerTransforms != null)
                 AddParam(paramsDictionary, "eager", string.Join("|", EagerTransforms.Select(t => t.Generate()).ToArray()));
             if (Context != null && Context.Count > 0)
-                AddParam(paramsDictionary, "context", string.Join("|", Context.Pairs));
+                AddParam(paramsDictionary, "context", Context.ReducePiped());
             if (ResponsiveBreakpoints != null && ResponsiveBreakpoints.Count > 0)
                 AddParam(paramsDictionary, "responsive_breakpoints", JsonConvert.SerializeObject(ResponsiveBreakpoints));
             if (Headers != null && Headers.Count > 0)
