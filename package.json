@@ -6,7 +6,8 @@
   "scripts": {
     "build" : "dotnet restore && dotnet build src/Cloudinary.Core src/Cloudinary.Core.DependencyInjection src/Cloudinary.Core.Sync",
     "pack" : "dotnet pack -o . -c Release src/Cloudinary.Core && dotnet pack -o . -c Release src/Cloudinary.Core.Sync  && dotnet pack -o . -c Release src/Cloudinary.Core.DependencyInjection",
-    "test" : "dotnet test src/Cloudinary.Tests"
+    "test" : "dotnet test src/Cloudinary.Tests",
+    "publish" : "node scripts/publish.js"
   },
   "repository": {
     "type": "git",
