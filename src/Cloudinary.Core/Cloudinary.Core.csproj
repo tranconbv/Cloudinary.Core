@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Based on official cloudinary api, moved dotnet core.</Description>
+    <VersionPrefix>1.30.0</VersionPrefix>
+    <Authors>tranconbv;joelharkes</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Cloudinary.Core</AssemblyName>
+    <PackageId>Cloudinary.Core</PackageId>
+    <PackageTags>cloudinary;cdn;core</PackageTags>
+    <PackageReleaseNotes>#1.30.0
+
+* Async first
+* Replaced WebClient with HttpClient
+* Moved Synchronous code to Cloudinary.Core.Sync (Extension methods on Cloudinary)
+
+# 1.30.0-camma
+
+* properly implemented Async for: UploadAsync &amp; DeleteResourcesAsync
+
+# 1.30.0-beta
+
+* Code cleanup
+* Better handling of async tasks 
+
+# 1.30.0-alpha 
+
+* Initial buildable solution: 
+** Contains custom simple rectangle struct. 
+** Throws whenever HttpContext.Current is used 
+** Removed Aspx references</PackageReleaseNotes>
+    <PackageIconUrl>http://res.cloudinary.com/cloudinary/image/upload/w_128/cloudinary_logo_square.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/joelharkes/Cloudinary.Core</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/joelharkes/Cloudinary.Core</RepositoryUrl>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>

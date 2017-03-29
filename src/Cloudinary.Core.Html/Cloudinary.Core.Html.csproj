@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Based on official cloudinary api, moved dotnet core. Contains the original html methods as extension methods</Description>
+    <VersionPrefix>1.30.0</VersionPrefix>
+    <Authors>tranconbv;joelharkes</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Cloudinary.Core.Html</AssemblyName>
+    <PackageId>Cloudinary.Core.Html</PackageId>
+    <PackageTags>cloudinary;cdn;core</PackageTags>
+    <PackageReleaseNotes>#1.30.0
+
+* Async first
+* Replaced WebClient with HttpClient
+* Moved Synchronous code to Cloudinary.Core.ExecSync (Extension methods on Cloudinary)
+
+# 1.30.0-camma
+
+* properly implemented Async for: UploadAsync &amp; DeleteResourcesAsync
+
+# 1.30.0-beta
+
+* Code cleanup
+* Better handling of async tasks 
+
+# 1.30.0-alpha 
+
+* Initial buildable solution: 
+** Contains custom simple rectangle struct. 
+** Throws whenever HttpContext.Current is used 
+** Removed Aspx references</PackageReleaseNotes>
+    <PackageIconUrl>http://res.cloudinary.com/cloudinary/image/upload/w_128/cloudinary_logo_square.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/joelharkes/Cloudinary.Core</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/joelharkes/Cloudinary.Core</RepositoryUrl>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cloudinary.Core\Cloudinary.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Html.Abstractions" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>
