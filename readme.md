@@ -1,10 +1,13 @@
 # Cloudinary core
 
-This is a direct port from CloudinaryDotNet official nuget package. so namespaces are the same, and all code should be the same.
+This is a direct port from CloudinaryDotNet official nuget package. so namespaces are (yet) the same, and all code should be the same.
+
+Although code is split up over several nuget packages to reduce footprint if you just want to use the basic api calls.
 
 * [Cloudinary.Core](https://www.nuget.org/packages/Cloudinary.Core/) => main package
 * [Cloudinary.Core.Sync](https://www.nuget.org/packages/Cloudinary.Core.Sync/) => Package containing original (not async) api calls.
 * [Cloudinary.Core.DependencyInjection](https://www.nuget.org/packages/Cloudinary.Core.DependencyInjection/) => containing simple helper methods to add Cloudinary as dependency.
+* [Cloudinary.Core.Html](https://www.nuget.org/packages/Cloudinary.Core.Html/) => containing original code for generating html.
 
 ## Usages
 
