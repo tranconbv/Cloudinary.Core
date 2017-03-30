@@ -27,15 +27,18 @@ var toPublish = paths.filter(x => x.indexOf('Test') === -1); //dont publish proj
 
 toPublish.forEach(project => {
     console.log(`packing ${project}`);
-    var projFile = path.join('src', project, 'project.json');
+    var projFile = path.join('src', project, project +'.csproj');
     var original = fs.readFileSync(projFile).toString();
-    var json = JSON.parse(original);
+    //var json = JSON.parse(original);
 
-    json.version = version;
-    json.packOptions.releaseNotes = releaseNotes;
+    
+    var newCsproj = original.replace(/<VersionPrefix>([\d.]+)<\/VersionPrefix>/,match => `<VersionPrefix>${version}</VersionPrefix>`)
+    //json.version = version;
+    //todo release notes
+    //json.packOptions.releaseNotes = releaseNotes;
 
-    fs.writeFileSync(projFile, JSON.stringify(json, null, 2));
-    child.execFileSync("dotnet", ["pack", '-c', 'Release', '-o', OUTPUT, path.join('src', project)]);
+    fs.writeFileSync(projFile, newCsproj);
+    child.execFileSync("dotnet", ["pack", '-c', 'Release', '-o', path.resolve(OUTPUT), path.join('src', project)]);
     fs.writeFileSync(projFile, original);
 
     console.log(`pushing ${project}`);
