@@ -4,7 +4,7 @@
     <Description>Based on official cloudinary api, moved dotnet core. Contains the original html methods as extension methods</Description>
     <VersionPrefix>1.30.0</VersionPrefix>
     <Authors>tranconbv;joelharkes</Authors>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Cloudinary.Core.Html</AssemblyName>
     <PackageId>Cloudinary.Core.Html</PackageId>
@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Html.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Html.Abstractions" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

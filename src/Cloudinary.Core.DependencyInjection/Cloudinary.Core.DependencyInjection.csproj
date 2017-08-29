@@ -4,7 +4,7 @@
     <Description>Based on official cloudinary api, moved dotnet core.</Description>
     <VersionPrefix>1.30.0</VersionPrefix>
     <Authors>tranconbv;joelharkes</Authors>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Cloudinary.Core.DependencyInjection</AssemblyName>
     <PackageId>Cloudinary.Core.DependencyInjection</PackageId>
@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

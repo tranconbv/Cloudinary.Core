@@ -4,7 +4,7 @@
     <Description>Based on official cloudinary api, moved dotnet core. Extension methods to bring back Api Synchronous calls.</Description>
     <VersionPrefix>1.30.0</VersionPrefix>
     <Authors>tranconbv;joelharkes</Authors>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Cloudinary.Core.Sync</AssemblyName>
     <PackageId>Cloudinary.Core.Sync</PackageId>
