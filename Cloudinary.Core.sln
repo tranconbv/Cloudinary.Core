@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26114.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudinary.Core", "src\Cloudinary.Core\Cloudinary.Core.csproj", "{3764BD01-2B04-4298-8965-A8B314572689}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudinary.Tests", "src\Cloudinary.Tests\Cloudinary.Tests.csproj", "{F5A5F24B-E96A-4E7C-8B59-281456F68AC9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudinary.Core.Sync", "src\Cloudinary.Core.Sync\Cloudinary.Core.Sync.csproj", "{4B123BEF-D19E-4908-844F-7D58C6B4BB98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudinary.Core.DependencyInjection", "src\Cloudinary.Core.DependencyInjection\Cloudinary.Core.DependencyInjection.csproj", "{1C2B7FC1-9D75-4731-A7FB-68B5E5B6FCCE}"
